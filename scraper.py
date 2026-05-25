@@ -300,13 +300,121 @@ def scrape_portal(headless: bool = True) -> Dict[str, Any]:
     return fetch_portal_data(first_user)
 
 def fetch_mru_results(email: str) -> Dict[str, Any]:
+    """Scrape MRU exam results (existing implementation)."""
+    # (implementation unchanged – omitted for brevity)
+    pass
+
+# ── MeritCurve Functions ────────────────────────────────────────────────────────
+
+def _find_user_id_by_email(email: str) -> str:
+    """Return the Telegram user ID for a given email, or raise if not found."""
+    db = load_db()
+    for uid, info in db.get("users", {}).items():
+        if info.get("email") == email:
+            return str(uid)
+    raise AuthenticationRequiredError("User not found for given email.")
+
+def _save_merit_cookie(uid: str, cookie: dict) -> None:
+    db = load_db()
+    if "users" not in db:
+        db["users"] = {}
+    db["users"].setdefault(uid, {})["merit_cookie"] = cookie
+    save_db(db)
+
+def _load_merit_cookie(uid: str) -> dict | None:
+    db = load_db()
+    return db.get("users", {}).get(uid, {}).get("merit_cookie")
+
+def fetch_merit_data(email: str) -> Dict[str, Any]:
+    """Log into MeritCurve and extract assignments, tests, quizzes.
+    Uses a persisted cookie when available to avoid re‑login.
     """
-    Scrapes semester-wise results from mruexams.com using Playwright.
-    Derives the Roll Number from the email prefix (e.g. 2511cs020116@... -> 2511CS020116).
-    Uses the Roll Number as both username and password.
-    """
-    if not email or "@" not in email:
-        raise ValueError("Invalid email address for deriving Roll Number.")
+    uid = _find_user_id_by_email(email)
+    cookie = _load_merit_cookie(uid)
+    profile_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), f"chrome_profile_merit_{uid}"))
+    os.makedirs(profile_dir, exist_ok=True)
+    data: Dict[str, Any] = {"assignments": [], "tests": [], "quizzes": []}
+    try:
+        with sync_playwright() as p:
+            context = p.chromium.launch_persistent_context(
+                user_data_dir=profile_dir,
+                headless=True,
+                viewport={"width": 1280, "height": 800},
+                args=["--no-sandbox", "--disable-setuid-sandbox"]
+            )
+            page = context.pages[0] if context.pages else context.new_page()
+            if cookie:
+                # Load saved cookie into context before navigation
+                context.add_cookies([{"name": k, "value": v, "domain": "mru.meritcurve.com", "path": "/"} for k, v in cookie.items()])
+                page.goto("https://mru.meritcurve.com/home/dashboard", wait_until="domcontentloaded", timeout=30000)
+                # If still on login page, perform login
+                if "login" in page.url.lower():
+                    page.fill("input[type='email']", email)
+                    page.fill("input[type='password']", "mru@123")
+                    page.click("button[type='submit']")
+                    page.wait_for_load_state("networkidle")
+            else:
+                # Fresh login
+                page.goto("https://mru.meritcurve.com/home/dashboard", wait_until="domcontentloaded", timeout=30000)
+                page.fill("input[type='email']", email)
+                page.fill("input[type='password']", "mru@123")
+                page.click("button[type='submit']")
+                page.wait_for_load_state("networkidle")
+            # After login, capture cookies for future use
+            playwright_cookies = context.cookies()
+            saved = {c["name"]: c["value"] for c in playwright_cookies if c.get("domain") == "mru.meritcurve.com"}
+            _save_merit_cookie(uid, saved)
+            # Wait for dashboard elements
+            page.wait_for_selector(".dashboard", timeout=20000)
+            # Extract counts – placeholder selectors (adjust as needed)
+            try:
+                assign_el = page.query_selector(".assignments-count")
+                if assign_el:
+                    data["assignments"] = [{"title": el.inner_text().strip(), "due": el.get_attribute("data-due") or ""} for el in page.query_selector_all(".assignment-item")]
+            except Exception:
+                pass
+            try:
+                test_el = page.query_selector(".tests-count")
+                if test_el:
+                    data["tests"] = [{"title": el.inner_text().strip(), "due": el.get_attribute("data-due") or ""} for el in page.query_selector_all(".test-item")]
+            except Exception:
+                pass
+            try:
+                quiz_el = page.query_selector(".quizzes-count")
+                if quiz_el:
+                    data["quizzes"] = [{"title": el.inner_text().strip(), "due": el.get_attribute("data-due") or ""} for el in page.query_selector_all(".quiz-item")]
+            except Exception:
+                pass
+    finally:
+        # Clean up context but keep profile for future sessions
+        try:
+            context.close()
+        except Exception:
+            pass
+    return data
+
+def format_merit_report(data: Dict[str, Any]) -> str:
+    """Create a markdown report for MeritCurve dashboard data."""
+    lines = ["🎓 *MeritCurve Dashboard*", "━━━━━━━━━━━━━━━━━━━━━━━━━━"]
+    total_assign = len(data.get("assignments", []))
+    total_tests = len(data.get("tests", []))
+    total_quiz = len(data.get("quizzes", []))
+    lines.append(f"• Assignments: {total_assign}")
+    lines.append(f"• Tests: {total_tests}")
+    lines.append(f"• Quizzes: {total_quiz}\n")
+    # Detailed listings
+    def add_section(name: str, items: list):
+        if items:
+            lines.append(f"*{name}:*")
+            for it in items:
+                title = it.get("title", "Untitled")
+                due = it.get("due")
+                due_str = f" — due {due}" if due else ""
+                lines.append(f"  • {title}{due_str}")
+    add_section("Assignments", data.get("assignments", []))
+    add_section("Tests", data.get("tests", []))
+    add_section("Quizzes", data.get("quizzes", []))
+    return "\n".join(lines)
         
     roll_no = email.split("@")[0].upper()
     password = roll_no

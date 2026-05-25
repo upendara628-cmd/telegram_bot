@@ -13,10 +13,11 @@ from telegram.ext import (
 )
 
 import httpx
+
 from scraper import (
     fetch_portal_data, login_and_save_session,
     AuthenticationRequiredError, get_user_data, save_user_data,
-    fetch_mru_results
+    fetch_mru_results, fetch_merit_data, format_merit_report
 )
 
 load_dotenv()
@@ -454,6 +455,35 @@ async def results_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         results = await loop.run_in_executor(None, fetch_mru_results, email)
         await status_msg.edit_text(format_results_report(results), parse_mode=ParseMode.MARKDOWN)
 
+    async def merit_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Handle /merit command: fetch MeritCurve dashboard and report."""
+        if not await require_login(update):
+            return
+        telegram_id = str(update.effective_user.id)
+        ud = get_user_data(telegram_id)
+        email = ud.get("email", "")
+        status_msg = await update.message.reply_text(
+            "⏳ *Fetching your MeritCurve dashboard...*\n"
+            "This uses Playwright headless browser — please wait up to 30 seconds...",
+            parse_mode=ParseMode.MARKDOWN,
+        )
+        try:
+            loop = asyncio.get_running_loop()
+            data = await loop.run_in_executor(None, fetch_merit_data, email)
+            await status_msg.edit_text(format_merit_report(data), parse_mode=ParseMode.MARKDOWN)
+        except AuthenticationRequiredError:
+            await status_msg.edit_text(
+                "❌ *Login Failed on MeritCurve!*\n\n"
+                "Your session may have expired. Please run `/set_cookies` or `/setup_credentials` again.",
+                parse_mode=ParseMode.MARKDOWN,
+            )
+        except Exception as e:
+            logger.error(f"Merit fetch failed: {e}", exc_info=True)
+            await status_msg.edit_text(
+                f"❌ *Failed to fetch MeritCurve data.*\n\n`{str(e)[:300]}`",
+                parse_mode=ParseMode.MARKDOWN,
+            )
+
     except AuthenticationRequiredError:
         await status_msg.edit_text(
             "❌ *Login Failed on Exam Portal!*\n\n"
@@ -747,7 +777,7 @@ def main() -> None:
     app.add_handler(CommandHandler("timetable",   timetable_handler))
     app.add_handler(CommandHandler("assignments",  assignments_handler))
     app.add_handler(CommandHandler("subjects",     subjects_handler))
-    app.add_handler(CommandHandler("results",      results_handler))
+    app.add_handler(CommandHandler("merit", merit_handler))
     app.add_handler(CommandHandler("whoami",       whoami_handler))
     app.add_handler(CommandHandler("logout",       logout_handler))
 

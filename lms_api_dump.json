@@ -1,0 +1,985 @@
+[
+  {
+    "url": "https://api.campx.in/auth-server/auth-v2/workspaces",
+    "body": {
+      "isAuthenticated": true,
+      "workspaces": [
+        "student-workspace"
+      ],
+      "user": {
+        "globalUserId": "68b005125d1235b3511104b1",
+        "uniqueId": 16073,
+        "fullName": "BANDI UPENDER",
+        "email": "2511cs020116@mallareddyuniversity.ac.in",
+        "institutionIds": [],
+        "rollNo": "2511CS020116",
+        "semNo": 2,
+        "courseId": 1,
+        "branchCode": "AI&ML",
+        "admissionId": "01K1FSZWH9DWHH4FX8REE618SS",
+        "classroom": {
+          "section": "BETA"
+        },
+        "photoUrl": "https://media.campx.in/mruh/student-photos/19592.jpg",
+        "isResearchScholar": false
+      },
+      "institutionInfo": {
+        "institutions": [
+          {
+            "code": "mruh"
+          }
+        ],
+        "current": {
+          "code": "mruh"
+        },
+        "enableCampusHelpdesk": false
+      },
+      "asset": {}
+    }
+  },
+  {
+    "url": "https://api.campx.in/admin/user-guides?status=published&workspace=student-workspace",
+    "body": {
+      "result": [],
+      "totalCount": 0
+    }
+  },
+  {
+    "url": "https://api.campx.in/admin/platform-updates/active/student-workspace",
+    "body": [
+      {
+        "_id": "69eb592776b95068720c2933",
+        "title": "\ud83d\udd10 Open Results Page access \u2014 Authentication Required",
+        "description": "<p>As part of our continued efforts to strengthen platform security, the Open Results page now requires student authentication.</p><h3><br></h3><h3>\ud83d\udcdd <strong>What's Changed</strong></h3><p>The Open Results page is no longer accessible to unauthenticated users. When students open the existing Open Results link, they will now be prompted to log in with their student credentials before viewing their results.</p><h3><br></h3><h3>\ud83c\udf93 <strong>How Students Can Access Results</strong></h3><p>Students can check their results through any of the following authenticated channels:</p><ul><li>\ud83d\udd17 <strong>Open Results Page</strong> \u2014 Now requires login with student credentials</li><li>\ud83d\udcbb <strong>Student Web Portal</strong> \u2014 Log in to view results</li><li>\ud83d\udcf1 <strong>Student Mobile App</strong> \u2014 Access results directly from the CampX Student App</li></ul><h3><br></h3><h3>\ud83c\udfeb<strong> For Administrators</strong></h3><ul><li>\ud83d\udcc2 <strong>Sidebar Access</strong> \u2014 The Open Results page is now available to administrators (Academic Coordinator / Department Workspace / Examination Workspace) as a dedicated sidebar tab item enabling quick access without relying on the public link.</li></ul><h3><br></h3><h3>\ud83d\udc69\u200d\ud83c\udfeb <strong>For Faculty &amp; Classroom Coordinators</strong></h3><ul><li>\ud83d\udcca <strong>Student Profile \u2192 Academic Performance</strong> \u2014 Faculty and Classroom Coordinators can view individual student grades by navigating to the respective Student Profile and accessing the <strong>Academic Performance</strong> section. No separate access to the Open Results page is required.</li></ul><h3><br></h3><h3>\ud83d\udee1\ufe0f <strong>Why This Change</strong></h3><p>This update adds an additional layer of security to protect student academic records, ensuring that result data is accessible only to verified, authorized users. This aligns with data privacy best practices and safeguards against unauthorized access to sensitive student information.</p><h3><br></h3><h3>\u2705 <strong>Action Required</strong></h3><p>No action is required from institution administrators. Students using the existing Open Results link will simply be prompted to authenticate before accessing their results \u2014 no change in URL or process beyond the login step.</p>",
+        "tag": "Enhancement",
+        "attachments": [],
+        "workspaces": [
+          "academic-admin-workspace",
+          "team-owner-workspace",
+          "academic-coordinator-workspace",
+          "examination-workspace",
+          "student-workspace",
+          "classroom-coordinator-workspace",
+          "course-coordinator-workspace",
+          "department-workspace"
+        ],
+        "publishedAt": "2026-04-24T00:00:00.000Z",
+        "status": "published",
+        "createdBy": "Super Admin",
+        "updatedBy": "Super Admin",
+        "isPinned": false,
+        "helpfulResources": [],
+        "createdAt": "2026-04-24T11:51:03.599Z",
+        "updatedAt": "2026-04-24T11:52:58.455Z",
+        "id": "69eb592776b95068720c2933"
+      },
+      {
+        "_id": "69dbb639f16543592ed965d6",
+        "title": "\ud83c\udfab Campus Helpdesk for Staff and Students \u2014 Now Live",
+        "description": "<p>A centralized ticket management system for your campus. Students and faculty can raise support requests directly from their workspace, and institutions can configure teams, priorities, and agent assignments to ensure every issue reaches the right person.</p><p><br></p><p>\ud83c\udf93 <strong>For Students &amp; Faculty:</strong> Raise a ticket by navigating to Campus Helpdesk from the top-left dropdown. Select a category, describe your issue, set priority, and submit. Track status and communicate with the support team \u2014 all in one place.</p>",
+        "tag": "New Feature",
+        "attachments": [
+          {
+            "originalFileName": "CampX_Helpdesk_User_Manual.pdf",
+            "url": "https://media.campx.in/platform-updates/files/1305f616-91b1-40a4-a8b0-75fb36498ac0.pdf",
+            "key": "platform-updates/files/1305f616-91b1-40a4-a8b0-75fb36498ac0.pdf",
+            "mimeType": "application/pdf",
+            "fileSize": 129472,
+            "_id": "69dbb639f16543592ed965d7",
+            "id": "69dbb639f16543592ed965d7"
+          }
+        ],
+        "workspaces": [
+          "academic-admin-workspace",
+          "team-owner-workspace",
+          "faculty-workspace",
+          "student-workspace",
+          "employee-workspace",
+          "admissions-counsellor-workspace",
+          "admissions-director-workspace",
+          "admissions-officer-workspace",
+          "classroom-coordinator-workspace",
+          "course-coordinator-workspace",
+          "feedback-coordinator-workspace",
+          "research-coordinator-workspace",
+          "tele-counsellor-workspace",
+          "transport-coordinator-workspace"
+        ],
+        "publishedAt": "2026-04-12T00:00:00.000Z",
+        "status": "published",
+        "createdBy": "Super Admin",
+        "updatedBy": "Super Admin",
+        "isPinned": false,
+        "helpfulResources": [],
+        "createdAt": "2026-04-12T15:11:53.716Z",
+        "updatedAt": "2026-04-12T15:11:53.716Z",
+        "id": "69dbb639f16543592ed965d6"
+      }
+    ]
+  },
+  {
+    "url": "https://api.campx.in/student-api/feed?limit=10&skip=0",
+    "body": [
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "6a081998ae05def7a06c2ab3",
+        "contentType": "Academics",
+        "targetAudienceTypeIds": [],
+        "tags": [
+          "class work and transport fee payment"
+        ],
+        "priorityLevel": "important",
+        "status": "active",
+        "videoUrls": [],
+        "allowReactions": false,
+        "allowComments": false,
+        "resources": [
+          {
+            "resourceKey": "feed/images/72bd5b6f-34ed-4f21-8719-fd4bff6068c0.jfif",
+            "resourceId": "6a081998ae05def7a06c2aae",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "TRANSFEE 2026-27 ACADEMIC YEAR.jfif"
+          }
+        ],
+        "emailNotified": true,
+        "notificationChannels": {
+          "email": true
+        },
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "6768c4918887869591c805c8",
+        "userId": 153,
+        "type": "post",
+        "userData": {
+          "fullName": "M. Praveen Kumar",
+          "profileKey": "mruh/user-photos/153.jpg",
+          "designation": "FACULTY"
+        },
+        "targetDate": null,
+        "expiryDate": null,
+        "title": "COMMENCEMENT OF CLASSES AND TRANSPORT FEE PAYMENT 2026-27",
+        "description": "<p>COMMENCEMENT OF CLASSES AND TRANSPORT FEE PAYMENT 2026-27</p>",
+        "link": "",
+        "targetAudienceType": "everyone",
+        "createdAt": "2026-05-16T07:15:36.796Z",
+        "updatedAt": "2026-05-16T07:15:38.201Z",
+        "__v": 0,
+        "engagement": {
+          "_id": "6a11711ef9b6bd262b12ba8a",
+          "feedId": "6a081998ae05def7a06c2ab3",
+          "tenantId": "675fc0fdc08a2bcfb9d661f0",
+          "type": "post",
+          "allowReactions": false,
+          "allowComments": false,
+          "reactions": {
+            "totalCount": 0,
+            "details": []
+          },
+          "comments": [],
+          "createdAt": "2026-05-23T09:19:26.592Z",
+          "updatedAt": "2026-05-23T09:19:26.592Z",
+          "__v": 0,
+          "id": "6a11711ef9b6bd262b12ba8a"
+        }
+      },
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "6a02e4827da59774fd54c431",
+        "contentType": "Academics",
+        "targetAudienceTypeIds": [],
+        "tags": [],
+        "priorityLevel": "important",
+        "status": "active",
+        "videoUrls": [],
+        "allowReactions": false,
+        "allowComments": false,
+        "resources": [
+          {
+            "resourceKey": "feed/images/a1ff9460-8918-477f-a236-f49682a63af0.jfif",
+            "resourceId": "6a02e4823eb0be0fa9dc363a",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "caeer guidance programe.jfif"
+          },
+          {
+            "resourceKey": "feed/attachments/9095f64c-9b7a-452e-9228-e8ad41df0cc9.pdf",
+            "resourceId": "6a02e4823eb0be0fa9dc3651",
+            "type": "feed",
+            "subType": "attachment",
+            "originalFileName": "3 Universities Leaflet_QR_updated_1.pdf"
+          }
+        ],
+        "emailNotified": true,
+        "notificationChannels": {
+          "email": true
+        },
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "6768c4aa8887869591c80799",
+        "userId": 308,
+        "type": "post",
+        "userData": {
+          "fullName": "Dr T Sanjeeva Rao",
+          "profileKey": null,
+          "designation": "FACULTY"
+        },
+        "targetDate": null,
+        "expiryDate": null,
+        "title": "CAREER GUIDANCE PROGRAM FOR ENGINEERING ASPIRANTS MAY 24,2026  LOCATIONS",
+        "description": "<p>CAREER GUIDANCE PROGRAM FOR ENGINEERING ASPIRANTS MAY 24,2026&nbsp;LOCATIONS</p>",
+        "link": "",
+        "targetAudienceType": "everyone",
+        "createdAt": "2026-05-12T08:27:46.760Z",
+        "updatedAt": "2026-05-12T08:27:47.673Z",
+        "__v": 0,
+        "engagement": null
+      },
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "69f843252212d0c02b04a676",
+        "contentType": "Academics",
+        "targetAudienceTypeIds": [],
+        "tags": [],
+        "priorityLevel": "important",
+        "status": "active",
+        "videoUrls": [],
+        "allowReactions": true,
+        "allowComments": true,
+        "resources": [
+          {
+            "resourceKey": "feed/images/93a51644-f4a1-447a-9a3a-c38fffbb225a.jpg",
+            "resourceId": "69f843252212d0c02b04a66c",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "MRJEE Press Meet Poster 2026 30 04.jpg"
+          },
+          {
+            "resourceKey": "feed/images/128f94f9-5f27-4754-b558-0483360e12c0.jpg",
+            "resourceId": "69f84325aa6adf046c629a1e",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "MRU ADMISSION SOE.jpg"
+          }
+        ],
+        "emailNotified": false,
+        "notificationChannels": {
+          "email": false
+        },
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "678f4bc4588da5010f565456",
+        "userId": 5057,
+        "type": "post",
+        "userData": {
+          "fullName": "MALLA REDDY UNIVERSITY",
+          "profileKey": "mruh/user-photos/5057.jpg",
+          "designation": "FACULTY"
+        },
+        "targetDate": null,
+        "expiryDate": null,
+        "title": "\ud83c\udf93 Admissions Open 2026 \u2013 B.Tech Programs \ud83d\ude80",
+        "description": "<p><br></p><p><span style=\"color: rgb(12, 16, 20);\">Unlock your future with Malla Reddy University and take the first step towards a successful career!</span></p><p><br></p><p><span style=\"color: rgb(12, 16, 20);\">\ud83d\udcb0 Scholarships worth \u20b910 Crores*</span></p><p><span style=\"color: rgb(12, 16, 20);\">\ud83c\udfaf Industry-focused B.Tech programs designed for tomorrow\u2019s innovators</span></p><p><br></p><p><span style=\"color: rgb(12, 16, 20);\">\ud83d\udd39 CSE | AI &amp; ML | Data Science | Cyber Security | IoT</span></p><p><span style=\"color: rgb(12, 16, 20);\">\ud83d\udd39 IT | ECE | EEE | Mechanical | Robotics</span></p><p><br></p><p><span style=\"color: rgb(12, 16, 20);\">\ud83c\udf1f Learn. Innovate. Lead.</span></p><p><span style=\"color: rgb(12, 16, 20);\">\ud83c\udf10 World-class infrastructure | Expert faculty | Strong placement support</span></p><p><br></p><p><span style=\"color: rgb(12, 16, 20);\">\ud83d\udcf2 Apply Now:</span></p><p><span style=\"color: rgb(12, 16, 20);\">https://mrgi.in/apply</span></p><p><br></p><p><span style=\"color: rgb(12, 16, 20);\">\ud83d\udcde For Admissions: 94971-94971, 91778-78365</span></p>",
+        "link": "",
+        "targetAudienceType": "everyone",
+        "createdAt": "2026-05-04T06:56:37.675Z",
+        "updatedAt": "2026-05-04T06:56:37.675Z",
+        "__v": 0,
+        "engagement": null
+      },
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "69da293eb80f94436691370c",
+        "contentType": "General",
+        "targetAudienceTypeIds": [],
+        "tags": [],
+        "priorityLevel": "normal",
+        "status": "active",
+        "videoUrls": [],
+        "allowReactions": true,
+        "allowComments": true,
+        "resources": [
+          {
+            "resourceKey": "feed/images/b3b6b3ed-5529-459f-81a2-bad736f4a8d6.jpg",
+            "resourceId": "69da2937960de85c0490e447",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "01.jpg"
+          },
+          {
+            "resourceKey": "feed/images/0414235b-3635-4506-aee1-3b3a9916a9f4.jpg",
+            "resourceId": "69da2939b80f94436691352b",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "02.jpg"
+          },
+          {
+            "resourceKey": "feed/images/acb85229-18eb-4865-804c-7e0c1d405276.jpg",
+            "resourceId": "69da293ab80f9443669136d8",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "03.jpg"
+          },
+          {
+            "resourceKey": "feed/images/7f2fd79f-4d9c-47d9-85dd-1e369c28e604.jpg",
+            "resourceId": "69da293b960de85c0490e4a8",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "04.jpg"
+          },
+          {
+            "resourceKey": "feed/images/0d8ea7ac-df1d-4ba7-8773-5f98fc5e5974.jpg",
+            "resourceId": "69da293db80f9443669136fe",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "05.jpg"
+          },
+          {
+            "resourceKey": "feed/images/7b05fd71-6179-4726-926f-68c7a6e1e1cf.jpg",
+            "resourceId": "69da293eb80f944366913708",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "06.jpg"
+          }
+        ],
+        "emailNotified": false,
+        "notificationChannels": {
+          "email": false
+        },
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "678f4bc4588da5010f565456",
+        "userId": 5057,
+        "type": "post",
+        "userData": {
+          "fullName": "MALLA REDDY UNIVERSITY",
+          "profileKey": "mruh/user-photos/5057.jpg",
+          "designation": "FACULTY"
+        },
+        "targetDate": null,
+        "expiryDate": null,
+        "title": "\ud83c\udf96\ufe0f\ud83c\uddee\ud83c\uddf3 NCC Passing Out Parade | Malla Reddy University \ud83c\uddee\ud83c\uddf3\ud83c\udf96\ufe0f",
+        "description": "<p>A proud and emotional moment as our <strong>NCC cadets</strong> marked the successful completion of their journey with a disciplined and graceful <strong>Passing Out Parade</strong>. \u2728</p><p>With every step in sync and every salute filled with pride, the parade reflected their dedication, leadership, and commitment to the nation. \ud83e\udee1</p><p>Wishing our cadets success as they march forward with confidence, courage, and a strong sense of responsibility.</p><p> <strong>Once a cadet, always a cadet!</strong> </p><p><br></p>",
+        "link": "",
+        "targetAudienceType": "everyone",
+        "createdAt": "2026-04-11T10:58:06.613Z",
+        "updatedAt": "2026-04-11T10:58:06.613Z",
+        "__v": 0,
+        "engagement": {
+          "_id": "69da35d8960de85c04926969",
+          "feedId": "69da293eb80f94436691370c",
+          "tenantId": "675fc0fdc08a2bcfb9d661f0",
+          "type": "post",
+          "allowReactions": true,
+          "allowComments": true,
+          "reactions": {
+            "totalCount": 11,
+            "details": [
+              {
+                "globalUserId": "6954f6d846315df36ff9c0d4",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "678a72a4c64a1894e72675c8",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "67ae03304b15629bb266f5c9",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "678a51fdc64a1894e724d2c5",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "678525927db082a44c6940e3",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "67aad8e1c362e81a0136ce80",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68ac65f6cb81bef1fbfc8cb7",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68ac04cecb81bef1fbeea294",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "6782779bca78ba6109e700e2",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "6792560db040cb9088971931",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "6783959cca78ba6109eb0ad3",
+                "reactionType": "like"
+              }
+            ]
+          },
+          "comments": [],
+          "createdAt": "2026-04-11T11:51:52.853Z",
+          "updatedAt": "2026-05-08T13:57:52.623Z",
+          "__v": 11,
+          "id": "69da35d8960de85c04926969"
+        }
+      },
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "69da287a960de85c0490bc08",
+        "contentType": "General",
+        "targetAudienceTypeIds": [],
+        "tags": [],
+        "priorityLevel": "important",
+        "status": "active",
+        "videoUrls": [],
+        "allowReactions": true,
+        "allowComments": true,
+        "resources": [
+          {
+            "resourceKey": "feed/images/0124b734-97bb-4c04-87fa-e474d7b7a979.jpg",
+            "resourceId": "69da2876960de85c0490bb9b",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "01.jpg"
+          },
+          {
+            "resourceKey": "feed/images/f461636f-257f-4d72-99d4-c4face9a1b90.jpg",
+            "resourceId": "69da2877960de85c0490bbab",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "02.jpg"
+          },
+          {
+            "resourceKey": "feed/images/89c50cca-0793-49f3-b00a-a80830bf31fe.jpg",
+            "resourceId": "69da2878b80f944366910a7f",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "03.jpg"
+          },
+          {
+            "resourceKey": "feed/images/a49846de-6199-4b55-a169-f6fa9830e4fd.jpg",
+            "resourceId": "69da2879960de85c0490bbed",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "04.jpg"
+          },
+          {
+            "resourceKey": "feed/images/07af49ee-6423-4aae-bca5-f9e6c385f5dd.jpg",
+            "resourceId": "69da287ab80f944366910acc",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "05.jpg"
+          }
+        ],
+        "emailNotified": false,
+        "notificationChannels": {
+          "email": false
+        },
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "678f4bc4588da5010f565456",
+        "userId": 5057,
+        "type": "post",
+        "userData": {
+          "fullName": "MALLA REDDY UNIVERSITY",
+          "profileKey": "mruh/user-photos/5057.jpg",
+          "designation": "FACULTY"
+        },
+        "targetDate": null,
+        "expiryDate": null,
+        "title": "\ud83c\udfac\u2728 National Level Short Film Festival \u2013 UNITE \u2728\ud83c\udfac",
+        "description": "<p>Lights, camera, creativity! \ud83c\udf1f</p><p>UNITE \u2013 National Level Short Film Festival brought together passionate storytellers, filmmakers, and creative minds from across the country to showcase powerful narratives and cinematic excellence. \ud83c\udfa5</p><p><br></p><p>From thought-provoking stories to visually stunning creations, the festival celebrated the art of filmmaking and the power of storytelling. \ud83d\udca1\ud83c\udfad</p><p><br></p><p>A platform where creativity meets expression and ideas come to life on screen! \ud83d\ude80</p>",
+        "link": "",
+        "targetAudienceType": "everyone",
+        "createdAt": "2026-04-11T10:54:50.568Z",
+        "updatedAt": "2026-04-11T10:54:50.568Z",
+        "__v": 0,
+        "engagement": {
+          "_id": "69e4d7aa39723f02005d7472",
+          "feedId": "69da287a960de85c0490bc08",
+          "tenantId": "675fc0fdc08a2bcfb9d661f0",
+          "type": "post",
+          "allowReactions": true,
+          "allowComments": true,
+          "reactions": {
+            "totalCount": 2,
+            "details": [
+              {
+                "globalUserId": "68ac04cecb81bef1fbeea294",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "6782779bca78ba6109e700e2",
+                "reactionType": "like"
+              }
+            ]
+          },
+          "comments": [],
+          "createdAt": "2026-04-19T13:24:58.600Z",
+          "updatedAt": "2026-04-21T08:33:07.537Z",
+          "__v": 2,
+          "id": "69e4d7aa39723f02005d7472"
+        }
+      },
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "69ca20cdd7eb7381332518c6",
+        "contentType": "Admissions",
+        "targetAudienceTypeIds": [],
+        "tags": [],
+        "priorityLevel": "normal",
+        "status": "active",
+        "videoUrls": [],
+        "allowReactions": true,
+        "allowComments": true,
+        "resources": [
+          {
+            "resourceKey": "feed/images/0012169d-866e-4a96-9fa3-79a321ed230d.jfif",
+            "resourceId": "69ca20cd47c0ca5102d0e7c1",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "ADMISSIONS 2026-27.jfif"
+          }
+        ],
+        "emailNotified": true,
+        "notificationChannels": {
+          "email": true,
+          "push": true
+        },
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "6768c4918887869591c805c8",
+        "userId": 153,
+        "type": "post",
+        "userData": {
+          "fullName": "M. Praveen Kumar",
+          "profileKey": "mruh/user-photos/153.jpg",
+          "designation": "FACULTY"
+        },
+        "targetDate": null,
+        "expiryDate": null,
+        "title": "",
+        "description": "<p>ADMISSIONS 2026-27</p>",
+        "link": "",
+        "targetAudienceType": "everyone",
+        "createdAt": "2026-03-30T07:05:49.462Z",
+        "updatedAt": "2026-03-30T07:05:50.004Z",
+        "__v": 0,
+        "engagement": {
+          "_id": "69ca7618c80d6cea69d97dce",
+          "feedId": "69ca20cdd7eb7381332518c6",
+          "tenantId": "675fc0fdc08a2bcfb9d661f0",
+          "type": "post",
+          "allowReactions": true,
+          "allowComments": true,
+          "reactions": {
+            "totalCount": 14,
+            "details": [
+              {
+                "globalUserId": "68ac4499cb81bef1fbf97410",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "678db585d110cf17d6dc8267",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68b18be0e7136e89a79e0bcc",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68b8681e3a3c0d62802f0ee8",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "698ed930ee2ea2d49ee0d0e2",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68b53a2609032102fa296a01",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68adc21d671b2a326596647e",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "678f062677b182d7da8888bc",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "6954f6d846315df36ff9c0d4",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68f51adcbf7b232bcc65b504",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68ad31e3671b2a32657c65aa",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "6958e840222e3f2c8da1fff0",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68ac04cecb81bef1fbeea294",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "6782779bca78ba6109e700e2",
+                "reactionType": "like"
+              }
+            ]
+          },
+          "comments": [],
+          "createdAt": "2026-03-30T13:09:44.838Z",
+          "updatedAt": "2026-04-21T08:33:09.766Z",
+          "__v": 30,
+          "id": "69ca7618c80d6cea69d97dce"
+        }
+      },
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "69c4f2b16d7cfa3898a1076c",
+        "contentType": "general",
+        "targetAudienceTypeIds": [
+          "1"
+        ],
+        "tags": [],
+        "resources": [
+          {
+            "resourceKey": "feed/images/1e7e7d9c-87f3-400e-9d59-5e5630c24a8a.jpg",
+            "resourceId": "69c4f2b16d7cfa3898a10761",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "01.jpg"
+          },
+          {
+            "resourceKey": "feed/images/0e322119-873a-4005-8de9-5c89463ddfc1.jpg",
+            "resourceId": "69c4f2b12ff98ca960efa2ee",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "02.jpg"
+          },
+          {
+            "resourceKey": "feed/images/51d62f60-195f-48e0-88d1-9e0e00348bf5.jpg",
+            "resourceId": "69c4f2b12ff98ca960efa2f2",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "03.jpg"
+          }
+        ],
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "678f4bc4588da5010f565456",
+        "userId": 5057,
+        "type": "post",
+        "userData": {
+          "fullName": "MALLA REDDY UNIVERSITY",
+          "profileKey": "mruh/user-photos/5057.jpg",
+          "designation": "FACULTY"
+        },
+        "title": "Celebrating health, awareness, and responsibility on the occasion of World Kidney Day 2026 at Malla Reddy University \ud83d\udc99",
+        "description": "<p>The School of Allied &amp; Healthcare Sciences organized an insightful session highlighting the importance of kidney health, early detection, and preventive care. From expert talks to active student participation, the event empowered young minds to understand the value of a healthy lifestyle and regular check-ups.</p><p><br></p><p>Together, let\u2019s raise awareness and take a step towards a healthier future \u2014 because healthy kidneys mean a healthier life.</p><p><br></p><p>\ud83c\udf3f \u201cKidney Health for All \u2013 Act Early, Protect Your Health\u201d</p>",
+        "targetAudienceType": "institution",
+        "createdAt": "2026-03-26T08:47:45.439Z",
+        "updatedAt": "2026-03-26T08:47:45.439Z",
+        "__v": 0,
+        "engagement": {
+          "_id": "69c570da8dca5230b1efeba3",
+          "feedId": "69c4f2b16d7cfa3898a1076c",
+          "tenantId": "675fc0fdc08a2bcfb9d661f0",
+          "type": "post",
+          "allowReactions": true,
+          "allowComments": true,
+          "reactions": {
+            "totalCount": 4,
+            "details": [
+              {
+                "globalUserId": "68b069d3c0663efb79ca9da8",
+                "reactionType": "love"
+              },
+              {
+                "globalUserId": "68b53a2609032102fa296a01",
+                "reactionType": "love"
+              },
+              {
+                "globalUserId": "68adc21d671b2a326596647e",
+                "reactionType": "love"
+              },
+              {
+                "globalUserId": "68ac04cecb81bef1fbeea294",
+                "reactionType": "like"
+              }
+            ]
+          },
+          "comments": [],
+          "createdAt": "2026-03-26T17:46:02.272Z",
+          "updatedAt": "2026-04-19T13:25:09.353Z",
+          "__v": 14,
+          "id": "69c570da8dca5230b1efeba3"
+        }
+      },
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "69c3879531262cf6b70f7249",
+        "contentType": "general",
+        "targetAudienceTypeIds": [
+          "1"
+        ],
+        "tags": [],
+        "resources": [
+          {
+            "resourceKey": "feed/images/aea18177-7a9a-4e3b-927c-c8ab0221a66e.jpg",
+            "resourceId": "69c3879406c61ae6b2005454",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "01.jpg"
+          },
+          {
+            "resourceKey": "feed/images/d546342b-3759-4a5e-a1f9-733a8d33f646.jpg",
+            "resourceId": "69c3879406c61ae6b200546b",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "02.jpg"
+          },
+          {
+            "resourceKey": "feed/images/bad0155e-e581-46bc-a5ba-7c733e51eacd.jpg",
+            "resourceId": "69c3879406c61ae6b2005483",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "03.jpg"
+          },
+          {
+            "resourceKey": "feed/images/e27e3952-ee1d-4387-b396-6889bf954739.jpg",
+            "resourceId": "69c3879506c61ae6b20054a2",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "04.jpg"
+          },
+          {
+            "resourceKey": "feed/images/e5cbd361-73c5-4ff1-80fb-bca0c7bd1841.jpg",
+            "resourceId": "69c3879406c61ae6b200548f",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "05.jpg"
+          }
+        ],
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "678f4bc4588da5010f565456",
+        "userId": 5057,
+        "type": "post",
+        "userData": {
+          "fullName": "MALLA REDDY UNIVERSITY",
+          "profileKey": "mruh/user-photos/5057.jpg",
+          "designation": "FACULTY"
+        },
+        "title": "\ud83d\ude80\ud83d\udca1 Innovation in Action at Yantra Yugam!",
+        "description": "<p>The \u201cYantra Yugam | 24-Hour National Level Hackathon \u2013 Validation Session\u201d at Malla Reddy University marked a crucial milestone where ideas transformed into impactful solutions.</p><p><br></p><p>\ud83d\udc68\u200d\ud83d\udcbb Teams presented their prototypes, validated concepts, and received expert feedback to refine their innovations. From problem-solving to product thinking, participants showcased exceptional creativity, technical skills, and entrepreneurial mindset.</p><p><br></p><p>\ud83c\udfaf The session focused on evaluating feasibility, scalability, and real-world impact \u2014 empowering students to take their ideas closer to implementation.</p><p><br></p><p>\ud83d\udd25 A platform where innovation meets validation, and ideas evolve into reality!</p>",
+        "targetAudienceType": "institution",
+        "createdAt": "2026-03-25T06:58:29.347Z",
+        "updatedAt": "2026-03-25T06:58:29.347Z",
+        "__v": 0,
+        "engagement": {
+          "_id": "69c6c0d947c0ca5102a3e02d",
+          "feedId": "69c3879531262cf6b70f7249",
+          "tenantId": "675fc0fdc08a2bcfb9d661f0",
+          "type": "post",
+          "allowReactions": true,
+          "allowComments": true,
+          "reactions": {
+            "totalCount": 5,
+            "details": [
+              {
+                "globalUserId": "68b069d3c0663efb79ca9da8",
+                "reactionType": "love"
+              },
+              {
+                "globalUserId": "68adc21d671b2a326596647e",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68b56c8209032102fa3258b1",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68ad4439671b2a32657f2be7",
+                "reactionType": "love"
+              },
+              {
+                "globalUserId": "678f7a14dd6f6499dfa4f2e4",
+                "reactionType": "like"
+              }
+            ]
+          },
+          "comments": [],
+          "createdAt": "2026-03-27T17:39:37.877Z",
+          "updatedAt": "2026-04-10T05:50:47.128Z",
+          "__v": 7,
+          "id": "69c6c0d947c0ca5102a3e02d"
+        }
+      },
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "69c268e2a7d2fd9fecbf7801",
+        "contentType": "general",
+        "targetAudienceTypeIds": [
+          "1"
+        ],
+        "tags": [],
+        "resources": [
+          {
+            "resourceKey": "feed/images/3eabf825-ddd0-451a-88d4-36735e48c3b0.jpg",
+            "resourceId": "69c268e2f5c52aa0e229c50b",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "01.jpg"
+          },
+          {
+            "resourceKey": "feed/images/20660b6b-3c32-4025-9a34-371058db488c.jpg",
+            "resourceId": "69c268e2a7d2fd9fecbf77f4",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "02.jpg"
+          },
+          {
+            "resourceKey": "feed/images/62ff484f-f0f4-4eb2-8976-2e5cc639c6ec.jpg",
+            "resourceId": "69c268e2f5c52aa0e229c50d",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "03.jpg"
+          }
+        ],
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "678f4bc4588da5010f565456",
+        "userId": 5057,
+        "type": "post",
+        "userData": {
+          "fullName": "MALLA REDDY UNIVERSITY",
+          "profileKey": "mruh/user-photos/5057.jpg",
+          "designation": "FACULTY"
+        },
+        "title": "\ud83c\udf0d\u2728 Spreading Awareness, Inspiring Change!",
+        "description": "<p><br></p><p>On the occasion of <strong>World Tuberculosis Day 2026</strong>, the School of Allied &amp; Healthcare Sciences at Malla Reddy University organized a meaningful <strong>\u201cTB Awareness Walkathon\u201d</strong> to educate, engage, and empower communities in the fight against tuberculosis.</p><p>\ud83e\ude7a With active participation from students, faculty, and healthcare professionals, the event highlighted the importance of early detection, prevention, and collective responsibility in eliminating TB.</p><p>\ud83c\udfa4 Inspiring talks, enthusiastic participation, and impactful awareness initiatives made the event a true reflection of commitment towards a healthier society.</p><p>\ud83d\udc99 Together, we move one step closer to a TB-free world</p>",
+        "targetAudienceType": "institution",
+        "createdAt": "2026-03-24T10:35:14.672Z",
+        "updatedAt": "2026-03-24T10:35:14.672Z",
+        "__v": 0,
+        "engagement": {
+          "_id": "69ccd9ca08a86cac82efc6eb",
+          "feedId": "69c268e2a7d2fd9fecbf7801",
+          "tenantId": "675fc0fdc08a2bcfb9d661f0",
+          "type": "post",
+          "allowReactions": true,
+          "allowComments": true,
+          "reactions": {
+            "totalCount": 3,
+            "details": [
+              {
+                "globalUserId": "68adc21d671b2a326596647e",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68ae0ae6671b2a326599bc21",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68ad4439671b2a32657f2be7",
+                "reactionType": "love"
+              }
+            ]
+          },
+          "comments": [],
+          "createdAt": "2026-04-01T08:39:38.714Z",
+          "updatedAt": "2026-04-05T06:56:19.595Z",
+          "__v": 5,
+          "id": "69ccd9ca08a86cac82efc6eb"
+        }
+      },
+      {
+        "baseUrl": "https://media.campx.in",
+        "_id": "69c264fda7d2fd9fecbec62d",
+        "contentType": "general",
+        "targetAudienceTypeIds": [
+          "1"
+        ],
+        "tags": [],
+        "resources": [
+          {
+            "resourceKey": "feed/images/9f0ff4b5-0624-4a31-97e7-5e99bd006094.jpg",
+            "resourceId": "69c264fda7d2fd9fecbec618",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "01.jpg"
+          },
+          {
+            "resourceKey": "feed/images/fa7c5d87-1a3a-4ddd-9a4c-234487b4fe84.jpg",
+            "resourceId": "69c264fcf5c52aa0e22905ec",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "02.jpg"
+          },
+          {
+            "resourceKey": "feed/images/85cef344-37c3-499a-9bd7-31af59d30be4.jpg",
+            "resourceId": "69c264fdf5c52aa0e22905f1",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "03.jpg"
+          },
+          {
+            "resourceKey": "feed/images/cc9cce2e-204e-4f29-a97b-8a062db0c029.jpg",
+            "resourceId": "69c264fda7d2fd9fecbec61c",
+            "type": "feed",
+            "subType": "image",
+            "originalFileName": "04.jpg"
+          }
+        ],
+        "tenantId": "675fc0fdc08a2bcfb9d661f0",
+        "globalUserId": "678f4bc4588da5010f565456",
+        "userId": 5057,
+        "type": "post",
+        "userData": {
+          "fullName": "MALLA REDDY UNIVERSITY",
+          "profileKey": "mruh/user-photos/5057.jpg",
+          "designation": "FACULTY"
+        },
+        "title": "\u2699\ufe0f\ud83d\ude80 Yantra Yugam | 24-Hour National Level Hackathon \u2013 Inauguration \ud83d\ude80\u2699\ufe0f",
+        "description": "<p>Innovation takes center stage as Yantra Yugam, the 24-hour National Level Hackathon, was successfully inaugurated at Malla Reddy University.</p><p><br></p><p>Bringing together brilliant minds from across the country, the hackathon marks the beginning of an intense journey of ideation, coding, and problem-solving. Participants are set to push boundaries, collaborate, and transform ideas into impactful solutions within 24 hours.</p><p><br></p><p>\ud83d\udca1 Think. Build. Innovate.</p><p>\u26a1 24 Hours of Non-Stop Creativity</p><p>\ud83d\ude80 Shaping the Future Through Technology</p><p><br></p><p>The journey has begun \u2014 let the innovation unfold!</p>",
+        "targetAudienceType": "institution",
+        "createdAt": "2026-03-24T10:18:37.201Z",
+        "updatedAt": "2026-03-24T10:18:37.201Z",
+        "__v": 0,
+        "engagement": {
+          "_id": "69ccd9cc33c2cf9df729a5d4",
+          "feedId": "69c264fda7d2fd9fecbec62d",
+          "tenantId": "675fc0fdc08a2bcfb9d661f0",
+          "type": "post",
+          "allowReactions": true,
+          "allowComments": true,
+          "reactions": {
+            "totalCount": 3,
+            "details": [
+              {
+                "globalUserId": "68adc21d671b2a326596647e",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68b56c8209032102fa3258b1",
+                "reactionType": "like"
+              },
+              {
+                "globalUserId": "68ae0ae6671b2a326599bc21",
+                "reactionType": "like"
+              }
+            ]
+          },
+          "comments": [],
+          "createdAt": "2026-04-01T08:39:40.658Z",
+          "updatedAt": "2026-04-02T09:02:06.642Z",
+          "__v": 3,
+          "id": "69ccd9cc33c2cf9df729a5d4"
+        }
+      }
+    ]
+  }
+]

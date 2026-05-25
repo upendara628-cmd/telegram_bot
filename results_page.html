@@ -1,0 +1,1424 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><script src="js/bootstrap.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script src="jquery.min.js" type="text/javascript"></script>
+<script src="jquery-ui.min.js" type="text/javascript"></script>
+<script src="GridScroll.js"></script>
+<script src="chartjs/Chart.bundle.js"></script>
+<script src="chartjs/Chart.bundle.min.js"></script>
+<script src="chartjs/Chart.js"></script>
+<script src="chartjs/Chart.min.js"></script>
+<script type="text/javascript">
+
+    function SetSource(SourceID) {
+
+        var hidSourceID = 
+
+        document.getElementById("hidSourceID");
+
+        hidSourceID.value = SourceID;
+
+    }
+
+</script>
+<script type="text/javascript">
+    var soundObject = null;
+    function PlaySound() {
+        if (soundObject != null) {
+            document.body.removeChild(soundObject);
+            soundObject.removed = true;
+            soundObject = null;
+        }
+        soundObject = document.createElement("embed");
+        soundObject.setAttribute("src", "sounds/sound.wav");
+        soundObject.setAttribute("hidden", true);
+        soundObject.setAttribute("autostart", true);
+        document.body.appendChild(soundObject);
+    }
+</script>
+
+   
+   
+<script type="text/javascript">
+    function ChangeRowColor(row) {
+        var color = row.style.backgroundColor;
+        if (color != '#00cc77') oldColor = color;
+        if (color == '#00cc77') row.style.backgroundColor = oldColor;
+        else row.style.backgroundColor = '#00cc77';
+    }
+
+   </script>
+
+<script type="text/javascript">
+    function NavigateReport_VehicleDetails() {
+        javascript: window.open('SBCMSTRANSPORT/RptView_VehicleDetails.aspx', '_blank');
+    }
+    </script>
+
+<script type="text/javascript">
+    function NavigateReport_Master_Notifications() {
+        javascript: window.open('Frm_NotificationsDisplay.aspx', '_blank');
+    }
+    </script>
+
+<script type="text/javascript">
+    function NavigateReport_HostelDetails() {
+        javascript: window.open('SBCMSHOSTEL/RptView_HostelDetails.aspx', '_blank');
+    }
+    </script>
+ <script type="text/javascript">
+     function NavigateReport_DownloadHT() {
+         javascript: window.open('DownloadHT.aspx', '_blank');
+     }
+   </script>
+
+ <script type="text/javascript">
+     function NavigateReport_MRUCBCS() {
+         javascript: window.open('CBCSOption.aspx', '_blank');
+     }
+   </script>
+
+
+<script>
+    function isNumber(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<style type="text/css">
+    body {
+        font-family: Arial;
+        font-size: 10pt;
+    }
+
+    .marquee {
+        width: 400px;
+        overflow: hidden;
+        border: 1px solid #ccc;
+    }
+
+        .marquee span {
+            background-color: #A1DCF2;
+        }
+</style>
+<style type="text/css">
+    .list .itemsOne {
+        background-color: Orange;
+        color: White;
+    }
+
+    .list .itemsTwo {
+        background-color: Green;
+        color: Red;
+    }
+
+    .list {
+        font-size: small;
+    }
+</style>
+<style type="text/css">
+    .modalBackground {
+        background-color: Gray;
+        filter: alpha(opacity=80);
+        opacity: 0.8;
+        z-index: 10000;
+    }
+
+    /*ul li ul{
+  display: none;
+}*/
+
+    
+    /*for examcell modules design*/
+.exammodule1{
+    border-color:gray;
+    border-width:1px;
+    border-style:solid;
+    z-index:1;
+    width:250px;
+    height:180px;
+    padding-top:20px;
+    padding-bottom:10px;       
+    /*color:purple;*/
+}
+
+.exammodule1:hover {
+    transform: scale(1.2,1.2);
+    z-index:1;
+    transition-delay:0.1s;
+    transition-timing-function:ease-in-out;
+    background-color:#DDA0DD;    
+    -webkit-transition: transform 1s ease-in-out;
+    
+    /*color:white;*/
+}
+
+.exammodule2{
+    border-color:gray;
+    border-width:1px;
+    border-style:solid;
+    z-index:1;
+    width:250px;
+    height:180px;
+    padding-top:20px;
+    padding-bottom:10px;   
+    color:purple;    
+}
+
+.exammodule2:hover {
+    transform: scale(1.2,1.2);
+    z-index:1;
+    transition-delay:0.1s;
+    transition-timing-function:ease-in-out;
+    background-color:#F4A460;    
+    -webkit-transition: transform 1s ease-in-out;
+    /*color:white;*/
+}
+
+.exammodule3{
+    border-color:gray;
+    border-width:1px;
+    border-style:solid;
+    z-index:1;
+    width:250px;
+    height:180px;
+    padding-top:20px;
+    padding-bottom:10px;
+    /*color:purple;*/       
+}
+
+.exammodule3:hover {
+    transform: scale(1.2,1.2);
+    z-index:1;
+    transition-delay:0.1s;
+    transition-timing-function:ease-in-out;
+    background-color:#A1DCF2;    
+    -webkit-transition: transform 1s ease-in-out;
+    color:white;
+    
+}
+
+.exammodule4{
+    border-color:gray;
+    border-width:1px;
+    border-style:solid;
+    z-index:1;
+    width:250px;
+    height:180px;
+    padding-top:20px;
+    padding-bottom:10px;   
+    /*color:purple;*/    
+}
+
+.exammodule4:hover {
+    transform: scale(1.2,1.2);
+    z-index:1;
+    transition-delay:0.1s;
+    transition-timing-function:ease-in-out;
+    background-color:#58D68D;    
+    -webkit-transition: transform 1s ease-in-out;
+    /*color:white;*/
+    
+}
+
+.exammodule5{
+    border-color:gray;
+    border-width:1px;
+    border-style:solid;
+    z-index:1;
+    width:250px;
+    height:180px;
+    padding-top:20px;
+    padding-bottom:10px;   
+    color:purple;    
+}
+
+.exammodule5:hover {
+    transform: scale(1.2,1.2);
+    z-index:1;
+    transition-delay:0.1s;
+    transition-timing-function:ease-in-out;
+    background-color:#aaa;    
+    -webkit-transition: transform 1s ease-in-out;
+    /*color:white;*/
+}
+
+.exammodule6{
+    border-color:gray;
+    border-width:1px;
+    border-style:solid;
+    z-index:1;
+    width:250px;
+    height:180px;
+    padding-top:20px;
+    padding-bottom:10px;       
+    /*color:purple;*/
+}
+
+.exammodule6:hover {
+    transform: scale(1.2,1.2);
+    z-index:1;
+    transition-delay:0.1s;
+    transition-timing-function:ease-in-out;
+    background-color:#e0dc28;  
+    -webkit-transition: transform 1s ease-in-out;
+    /*color:white;*/
+}
+
+.exammodule7{
+    border-color:gray;
+    border-width:1px;
+    border-style:solid;
+    z-index:1;
+    width:250px;
+    height:180px;
+    padding-top:20px;
+    padding-bottom:10px;       
+    /*color:purple;*/
+}
+
+.exammodule7:hover {
+    transform: scale(1.2,1.2);
+    z-index:1;
+    transition-delay:0.1s;
+    transition-timing-function:ease-in-out;
+    background-color:#FFDAB9;  
+    -webkit-transition: transform 1s ease-in-out;
+    /*color:white;*/
+}
+
+.exammodule8{
+    border-color:gray;
+    border-width:1px;
+    border-style:solid;
+    z-index:1;
+    width:250px;
+    height:180px;
+    padding-top:20px;
+    padding-bottom:10px;       
+    /*color:purple;*/
+}
+
+.exammodule8:hover {
+    transform: scale(1.2,1.2);
+    z-index:1;
+    transition-delay:0.1s;
+    transition-timing-function:ease-in-out;
+    background-color:#8FBC8F;  
+    -webkit-transition: transform 1s ease-in-out;
+    /*color:white;*/
+}
+
+
+.exammodule_link{
+    /*font-weight:bold;*/
+    font-size:18px;
+    font-family:Nyala ;    
+}
+
+.exammodule_link:hover{
+    /*color:red;*/
+    text-decoration:underline;
+}
+
+/*student login modules*/
+
+
+.imgadmin {
+        width: 300px;
+        height: 150px;
+        background: url("images/modules/STUDENT-INFO1.jpg") no-repeat;
+        display: inline-block;
+        /*padding:50px 0px 0px 150px;*/
+    }
+    .imgadmin:hover {
+        transition-delay:0.2s;
+        transition-timing-function:ease-in-out;
+        -webkit-transition: transform 1s ease-in-out;
+        background: url("images/modules/STUDENT-INFO2.jpg") no-repeat;
+        /*padding:50px 0px 0px 150px;*/
+    }
+
+.imgstud {
+        width: 300px;
+        height: 150px;
+        background: url("images/modules/ONLINE-FEE-PAYMENT1.jpg") no-repeat;
+        display: inline-block;
+        /*padding:50px 50px 20px 100px;*/
+    }
+    .imgstud:hover {
+        background: url("images/modules/ONLINE-FEE-PAYMENT2.jpg") no-repeat;
+        /*padding:20px 50px 20px 50px;*/
+    }
+
+.imgaca {
+        width: 300px;
+        height: 150px;
+        background: url("images/modules/ACADEMICS1.jpg") no-repeat;
+        display: inline-block;
+        /*padding:50px 50px 20px 100px;*/
+    }
+    .imgaca:hover {
+        background: url("images/modules/ACADEMICS2.jpg") no-repeat;
+        /*padding:20px 50px 20px 50px;*/
+    }
+    
+.imgexam {
+        width: 300px;
+        height: 150px;
+        background: url("images/modules/EXAMINATIONS1.jpg") no-repeat;
+        display: inline-block;
+        /*padding:50px 50px 20px 100px;*/
+    }
+    .imgexam:hover {
+        background: url("images/modules/EXAMINATION2.jpg") no-repeat;
+        /*padding:20px 50px 20px 50px;*/
+    }
+
+.imgplc {
+        width: 300px;
+        height: 150px;
+        background: url("images/modules/PLACEMENTS1.jpg") no-repeat;
+        display: inline-block;
+        /*padding:50px 50px 20px 100px;*/
+    }
+    .imgplc:hover {
+        background: url("images/modules/PLACEMENTS2.jpg") no-repeat;
+        /*padding:20px 50px 20px 50px;*/
+    }
+
+.imgmore {
+        width: 300px;
+        height: 150px;
+        background: url("images/modules/MORE1.jpg") no-repeat;
+        display: inline-block;
+        /*padding:50px 50px 20px 100px;*/
+    }
+    .imgmore:hover {
+        background: url("images/modules/MORE2.jpg") no-repeat;
+        /*padding:20px 50px 20px 50px;*/
+    }
+
+
+
+    #f1_container {
+        position: relative;
+        margin: 10px auto;
+        width: 150px;
+        height: 20px;
+        z-index: 1;
+        margin-left: 0px;
+        margin-right: 20px;
+        margin-bottom: 140px;
+    }
+
+    #f1_container {
+        perspective: 1000;
+    }
+
+    #f1_card {
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: all 1.0s linear;
+    }
+
+    #f1_container:hover #f1_card {
+        transform: rotateY(180deg);
+        transition-delay:0.1s;
+        transition-timing-function:ease-in-out;
+
+        /*box-shadow: -5px 5px 5px #aaa;*/
+    }
+
+    .face {
+        position: absolute;
+        width: 100%;
+        height: 150px;
+        backface-visibility: hidden;
+    }
+
+        .face.back {
+            display: block;
+            transform: rotateY(180deg);
+            box-sizing: border-box;
+            padding: 10px;
+            color: white;
+            text-align: center;
+            background-color: #aaa;            
+        }
+</style>
+<script language="javascript" type="text/javascript">    
+    function closepopup() {
+        $find('ModalPopupExtender1').hide();
+    }
+</script>
+<script>
+    $(function () {
+        $('.marquee').marquee({
+            speed: 10000,
+            gap: 50,
+            delayBeforeStart: 0,
+            direction: 'up'
+            //,duplicated: true
+        });
+    });
+</script>
+<script type="text/javascript" language="javascript">
+    function disableBackButton() {
+        window.history.forward()
+    }
+    disableBackButton();
+    window.onload = disableBackButton();
+    window.onpageshow = function (evt) { if (evt.persisted) disableBackButton() }
+    window.onunload = function () { void (0) }
+</script>
+
+
+
+
+
+<style>
+    .dropbtn {
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        width: 35px;
+        height: 35px;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+        height: 35px;
+        margin-top: -30px;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #DACFD5;
+        float: right;
+        right: 0;
+        left: auto;
+        /*background-color: #f9f9f9;*/
+        /*min-width: 300px;*/
+        width: auto;
+        box-shadow: 5px 0px 16px 0px rgba(244,128,128,0.2);
+        /*z-index: 1;*/
+        z-index: 903!important;
+        font-size: 15px;
+        margin-top: -15px;
+        padding: 10px 10px 10px 10px;
+    }
+
+    .a {
+        color: white;
+        float: right;
+        right: 0;
+        text-decoration: none;
+        display: block;
+        height: 25px;
+        width: auto;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+        
+    }
+
+    .dd_AcYear {
+        vertical-align: bottom;
+        border-color: lightcoral;
+        background-color: lightcoral;
+        font-size: small;
+        width: 120px;
+        height: 30px;
+        margin-bottom: -5px;
+    }
+
+.imgback{
+    width:170px;
+    height:150px;
+    color:#aaa;
+    text-decoration-color:white;
+    margin-right:-10px;
+    margin-top:-10px;
+    margin-left:-10px;
+    text-align:center;
+    white-space:normal;
+    font-family:'Century Gothic';
+}
+
+.ProfilePic{
+    border-radius:50%;
+}
+
+
+ #cssmenu2 {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, Sans-Serif;
+  font-size: 13px;
+  line-height: 15px;
+  text-transform: uppercase;
+  text-align:  left;
+  width :100%;
+  margin-left:auto;
+  margin-right:auto;
+  margin-top:15px;
+ 
+}
+ 
+#cssmenu2 ul {
+	
+	margin: 0;
+	padding: 0;
+	list-style: none;
+   
+}
+#cssmenu2 ul li {
+	display: block;
+	position: relative;
+	float:  left;
+	 background:#506DA6;
+     /*background:#f08080;*/
+	 margin-right:2px;
+	
+}
+ #cssmenu2 > ul li.has-sub {
+    background:#506DA6;
+    /*background:#f08080;*/
+  }
+  
+  #cssmenu2 > ul li.has-sub ul {
+ 
+ width:200px;
+ 
+}
+#cssmenu2 li ul {
+	display: none;
+    position:absolute;
+    left:0;
+     border: 1px solid #FFFFFF;
+}
+
+#cssmenu2 ul li a {
+	 display: block;
+  padding: 6px 31px 6px 31px;
+  text-decoration: none;
+  color: White;
+}
+
+#cssmenu2 ul li a:hover {
+	background: #F0C000;
+    /*background:#00CED1;*/
+	color:Black;    
+}
+
+#cssmenu2 li:hover ul {
+	display: block;
+	position: absolute;
+}
+
+#cssmenu2 li:hover li {
+	float: none;
+	font-size: 11px;
+}
+
+
+</style>
+
+
+
+<link href="../StyleSheets/MasterPageCss.css" rel="stylesheet"><link href="../StyleSheets/LoginCSS.css" rel="stylesheet"><link href="../Scripts/jquery.datetimepicker.css" rel="stylesheet" type="text/css"><link href="../jquery-ui.css" rel="stylesheet" type="text/css"><link href="../css/bootstrap-responsive.css" rel="stylesheet"><link href="../css/bootstrap-responsive.min.css" rel="stylesheet"><link href="../css/bootstrap.css" rel="stylesheet"><link href="../css/bootstrap.min.css" rel="stylesheet"><title>
+
+</title>
+    <link href="/WebResource.axd?d=IPeluPODhuxgcsCane2vmMCM9ZkCC9xF-5-IM2IiNA2BrhdnfebollqBwP25TE4ZhS5Yr1BkQshG7xwiUseq727w3KjoGc7-4olc4fm0M7w3JdUfX6mGMrbhUeocZ7AqMUoGdAMtphoUsVdayJyneA2&amp;t=636285582600000000" type="text/css" rel="stylesheet"></head>
+<body style="width: 100%; padding: 0px;" onload="noBack();">
+    <form method="post" action="./Frm_SemwiseStudMarks.aspx" id="form1">
+<div class="aspNetHidden">
+<input type="hidden" name="ScriptManager1_HiddenField" id="ScriptManager1_HiddenField" value=";;AjaxControlToolkit, Version=3.0.20820.6783, Culture=neutral, PublicKeyToken=28f01b0e84b6d53e:hi-IN:4a33d993-d0f3-4dd1-8c4f-1a68c798a3b4:865923e8:91bd373d:ad1f21ce:596d588c:411fea1c:77c58d20:14b56adc:8e72a662:acd642d2:269a19ae" style="">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" style="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" style="">
+<input type="hidden" name="Stud_cpBody_tabResult_ClientState" id="Stud_cpBody_tabResult_ClientState" value="{&quot;ActiveTabIndex&quot;:0,&quot;TabState&quot;:[true,true,true,true,true,true,true,true,true,true]}" style="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="KmJE5lFMv2+0HPDQfm4b5VlJ32tWOZnnjoVBgGrE7NFxMOHtbcLpYhi77VLcN6I2kjsg7YLva+vLImQFNduy16yb627tx3rGk8OdAFcAhgftf7oHUhemxSMYqCTwbWdl7gGNqPBU6B6ya2LX2bl6gIFDDz847YTmlyd973/HqlMSHLrW+L0G4X63po1jEAF4n791SrNQEwyJsPnTQJgwo7zdNglv7GuW7isroxJpaZzGT8cGS6KHdXHZsL+n7YEu/A50MdUnIcdnVod/xVREqUwrTq6CzN11sfLkJc98e4nbrOCO1yaQyLwH015vUJlwaYCodsnCGXY7lNEbVzb/r77zEfxnftWbefTV2Ct7HCXLZxQE2hSSpVZuNRvoOq6IlyUzPQtU5fDUVzh68eBM5WpK1FMvgVrxJZgHIQJbzlSYllcASmNQEPAYwhj7OTHiLcN+gqHRhMUe/7+bFmJJRdjvmu9azed1HsjVE1/C95kPzTW1EyCxvkwtiSSm5lotkj9lN0xJHZ69sQAkpk6KRVrkqzsyYcsePvdJAWgYWd+LrVHAsOHVbKhydBGGoA3UPB8DtaQRC8fDZm2xtArKRxqPv0NlbEAyMNNzNPkRWuhUBCPk2F2te8YaSqUuUblQlvdrzisUcXRYLX5AvmZSX0zpUmLxOHcXAXCJZBnUFD2GfIc3o8zvdHxZJhSoxCgJQbkzZ0SkmVIt/IPAF/mhsmbpuSpBn2D2p5Xk+aX09cSiWWrhvv9tbSwaaVrhHdP46mRIVO2ttQk7VisnUMTV9bgncVLSpj/YYJgSRjO3pkjDn2Ez1RTGH3ruY4GEaIlUUQkwohzaQbrNM+fEIAokUjRgDL4bKDxJRd0iqniE/1sEjd88lcVSda3cNLS+jrB452B+B9Y6XprQ6lhn9PUM8ZpGVcDvoJLs9lgOgzWS731Mc3rwdnbxyW7NIK7YKPfMevd7RBR3Wr+ziKxVT/8geWkwSdPdqE+qcrcGQ4pz+WYzFfSJAh2tZWakSbig85iyizt/HhLUtGCbBbG21tcBiLcEVDcVwU+FeFIKiXaSOECMGUZ/x/ogx96dN+MXnoFDwmyK5LKcX+kiHwnitp4vTHHZE1b5ayEbi0crLyRs0AmkA+F14U2nJXPco/fhFacrIbH/zH8YCpjDws+DpxNQjGMU9JgYTXrhKrcB4JhVy3UrEKiQkVtgSPRBLCGqWZPGTCWc8XaGXvABO0ZmZaS+LKR65Nfm4Dh8WbXh/6vZrcyqv988d0AgpTrf41pfJGBt4UKAn0Fp4Cbyn4N2ZR3v78HM4pjjXzixCYoElVoQ8ZLX9N/rXatCzVNDtOzXAp5lSMTOKsXDYlbFv5wGgZSL/nTjkNz+qKyL+LtUQKAlu5TbL8WdW2k0l14s+RvaHCdOwOYfz8xbnx77L2v/Z1d0XXL06y1g9A1AqHKG0eHicxfAd0Blj4vHLE2RvQaOWAw/AniUFtDROHprUtGhQIEStiHuZLbX/OAmGOGITNH2n3dygNTb0y+IMTBN2Dm6oyPwD271hJleBx1fOHfR/grXipL2nW0XJv3PlYSS91oMG72k/Ups0YtuS1DWxEPLMfhIkMORC351kJQEl/li2ZTnvaYk83mc4NLx4ROVb1ep+PvAVQqGUSALv5MKO0mWVBYlZIMsgDFl0vJIAXpyiwE5QPTRdLXoxfuQt4wnhfgvYNsviv9F7Rf7wzdfPAyeskJLMqcndtLZpykSY6GrOpG+NLEfBBvwg9FVmgGC79/UnRQU+w7VA1YwNDj1KZyjjTcAZhsnby/ks8nDS+WixD1xX99l7zWYu9Fr3XC9MASa5ymL5Gg/6DFsCv+CvtU3366jOZfwm/jBJ0aE2O2fOynSFbziS5rwnv3c9mE7u8fHnmcZDj/rja+eZQSjzzKcRf5EeKLJcpyxrHIJFrD81TIStCMd62I9i6zF+3vuFAJffZ2Ya/ymk6RHZe3gx3Dtt1l3QUS8oo6KCrv8obGLNl8CUiYiWL9ZSIVpVK5ORkaDo/tGbLmsA6zeiv+DNWoHyfFcBjcXfidnIafKZj9ciZPA2n32OjHZvgQf8WJkimktQsY4bdMcmGw67gZrXIfHZGDOLPQTyXxZERQGTedXX7cXqoWTtI+b3EPd8AHDvalSWVpz7Fr+l4JzkQh3ZmNW2Avr/gVtKdNZnew1jk9+OK5s2mx1dXO3eD4Yd/DacFW8IwBMkabzoGVTqKhNVSe9DqJn0QvRWj7pG6tsRDR0qu3wZKDiamlDTyzdmb99M8QfdhWkMtWidxSnrruHQZQ+YJ5LsUfbvtvBXYN9f4SC+EVS5XcwMZ9tz050slKVyk7nbKMy5PNBHtmbgagLR2dSwB+N0pU9mSEYvGeLuhP2lA6a2ZH9oOkVuzU6mw6hdhACRYiDbuA4O3p/Qzoyo9USWQHe/wW9GpZezbX3R3978JknDD+NhoywnfmuC8GOtH+k351CtDS26bkqNop8mcTHHnKlMddFnhrmGVGnAeP42qvE3YDOSeESR2E5PLS1Ci7e1MErDNcg1NLqS0uapfd0aBEXFD7Ejzte7qaaj0ZOcYKX0cr8ZfVJSDGOLudvWLiTHNktfB45BIEBhyYbaBH6dmEMABL3U3VfJdNUNJO3IwqyjXZzM7+7ExAZ56sdkOCUtL0P8Rw3zgAZ/A3rJiFbQTxlg4sBEPlLfQK/wyIvjdo7Sd13TkmpR7ESLizgyzhZbRXjkq6ga1aSgsKZEZfbqj17yqCs8Mk5V3gDi0x4mqm0LOVqybw4m/B4t7StiMlbFxIz5nNl4Mrw5hMMZSYggASFKoHFdbsGnTifvm5ZOFdULAKJ5x43RAsbuhO2ICQ/Q4rYCt1rYx6P1Ut19wwudSfg95ago17rUA5/Hdq7HlsCPrRMdVWk/Ihaz/KGbOnbtcySxpZ2PYBGaHqDGpFqFjDgtCn5ue+kfY8BzUFkEM9d+2I5sSQ/6XFTE1Y8Sa8nVBBg6qJ6X40R4kfoMtzAkyfDNI3uI15iJf9l07+d9R0GJoM2D9Zy6MYptw7ATcprgXadLTzlWdUkD4q8/Ani85Vo12odBTJGcIl8Q/oHYVmpbKHuVmqtLPn5dfgo4DFTalYHBoymVpC+6QiAqSyfPuejnF/9+EmWDLnQjuuzlAGzOT7i4Bs5fzSlFIrBLllGFw902pdkQ84CXU0y/W8W0kgxUUC/knYXoHSVpW0Qn4lnnGTBMCOHbGgFWZGpFJSDrmn0DcbD1hCV3odLE5vLO+OwVYwNklLuGpym1uYHO2TJ3DvlJHTjrTJeeLFjnU9mLxLkZuHF8nJHPQ0yz8rpH410jbu7Scrr2ysxedAr0hcyoXc0WecBEWGorMr76QFoOQxnGooKzbVFdMUgf2UXo2OGt/0jtgmBJSnJsrAZgFbzqAl0Bc4fNSupu9L+LArjhvrRfUuh+DBXdMHOX2hJCbZy+WO5hdmW6iie6NrI0Fq3N46GGV29J3B8uvs/yOMx4N0wi8HMTzGs1O+x/X7p0j2HIh+GhEMdaxHe043S9L/olno0sdjBR7/dABodvdC30MGb6W6slx6ClSkU5OqhpWbArVYhTK8voYpRn4UXSzOnr4FViDx2xszAyKCqcy5ltKCCaL93NMRY4/AVXF/5KkgBncPTOTSUbrrSF4p1xCiOj4y3nwGkW6lrNUNHwHa9OrpIL1Opn3qCGYrtI+RN95G/ihN1AE07C+3AlTS+oIymIv62EEWOisZWH3VYbulE0bG4zKmeb8N0Hx7QGiC1oA8pkBRbSqyw/X2E7jQAmhAo/k+hSNX+pSoCGCxqBJTireGpHbTk0ciNL5Wr63mbXcSDltYkMzKb7C2kwvgCVCNd0o3ly39b14hBJwsK7BZ8NGEc+NxXvcAv+ZuYQGXPcljPIC3OKEwIIZ+H5Dbho+ZTlfH3o6cONbETXXgr0lMXRc3iMmnBCO7C5C01JleWpJpAVkZoneGLxd5OVIBs0Ws5NnxTbklMP+6hZ1nwXP0WE3pSyBG90dc/SOsi8U0dH6u2KywTvC7AM6CNCUJC82wERA74MprF6Q7k32DyaHfla6PjVXkXAbbVQtUhZnnWujp53z2mR56feIukPuQwXrl5ZQFH8T0k1lPo5ZdOh9v52u9cWKVwBfR7oZ0nbgOy4IfLV+Znd0U9AUUn5dRrp1UrH6n2A0LvvXaHsPnXVuzVaGlliLJGqPltfGRQAx7vughhRqd4lHg0poPn56isuamVJBpxg9Ri4iijpZwTO5TDd6zVTAWDd3UJ1uz5cFgJbXM4cNTWHEzUTB3uB3xh7HppRZF/Z1hYDOxm0mBrun6UHKDABfw4HlbvP8Epv3UCHMy13ujnuY038iI0AvcIb31NwlkS5UCCUOv3qBYyQE/ZpragnYHQfoyYgipxf0CnXeg5fWTvUmSUk/pLb2f80Rgb+VD+zH+EbgknBzyiFubSJnTcIsu5SwtV/HZNh2qLhrYmgIWG1T6L+/PQ2dQS20a8T+LDQVXPPQ0p7XF1Pdu93oieMd5ERkSEGaso3qoyzP5q7I8g0aZMzesBeGAgmkGCjgbwO54xqEOc+IqAjAbCGTFUYr/Vv3kjrNWd5Y7XtNhOgoo8OWuz4GhDL0iD56p6a3T9L13sDqi1TnDHiQPkSO7KaiBeGn0LYCERZuwYrpKM7A6DreyrEhIgF9f4/YQV4XOnF0fL+H7HznnA6vWt/F+mS/FZVX/bbA6uHGtifb9WEzxDlfLGZyVNb7Fc7BX4WzQa7YN1YWLY4S7fKtqRIC/jkPZ9hJ/0cV9Y+3Ogf2n5SbhdA12vUdwOxQh5nroHKkZEsBTp8O+zpXhb22nwEOdQF70VZTB7ZkXOIig23WsgbbfFHJ1dDzY04j9k7PSJaxie4Ugp+bbERSf3YP/6RzfPRzYX65YxKlzjl1H9euN5+rcmAOfFakpjxWU0K1A/L3Su1ecrfC3kOT0stbvG4/kW2r7HH7/XCMk29MTLAWTC0tnRNIuQ+Vbo3LeZnlrTocvZoCLuHucxe2JiGeaWxEysit+QAIQ0z+yi35WqTcdObFDpT+T4fI9vxrzHChqAKlIFaT7rxHcYV6vZqLq/exgDFh/RS5715dUNpdV7kll/E5JP242QFJQKHoq2W7Ptcv/kEsPWDnVgOa0ypmr05Od6siIbRshw5c0xmCzqF8MdiNSZWKex64KHilQ6cet2gd8dBZBshI6bm4p0L+EVwS1ag1fDni+is2bzvK13zZ1RZ0EwKxq0xVrnNPRNkP7RPjqhJkcyTyAt1i1ynRvdUnNmZwVHTOlbCveZIZywjf19/iFS7L717PsiJlTD3BOP23H190D6Kp8GgltHkZp/ES7n1khsIyZeOuN+Bd+T7g2qoSeb5YJ1mtwEzbBXWd/sgWmhunXMcqUTc2LZR7Bm3LD3snKosXrhbOvq9hm0u9pW004xCO28AwxXwBtot9EkQkxkhXdwcqEhJ9TBu+AC2Is4EfxrYDOJXo7P0YL6zUIg" style="">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form1'];
+if (!theForm) {
+    theForm = document.form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="/WebResource.axd?d=pynGkmcFUV13He1Qd6_TZLkEOwFQEYmJToMpmAGQtDkS80ID20sCRD4RgJe_S5R7DnwxTMBB20s9GO0vuBuQlw2&amp;t=638914562334897068" type="text/javascript"></script>
+
+
+<script src="/ScriptResource.axd?d=D9drwtSJ4hBA6O8UhT6CQke0jWFIeEr1UxVRuc_rYSBrCxq0_klWatoq8HVk2b9mm5UpI40SOfIAnjnGxilPz3R6h0nsXiZwJHrTojoTcQPGyDPxVHezinGGA4t_eJCv4nd5w-OLwF77XQIXl93A6DUCQ2yk4MVfP1SXbKN0Nno1&amp;t=ffffffff9763f56e" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="/ScriptResource.axd?d=JnUc-DEDOM5KzzVKtsL1tchF372HTCcmhryNuVSrMRJjmStHmr_78pwh4BTAQgGAyh_zdTClJjpaJub3KGLnulbWF0pNck3dd-DUJN3Ic7KVYVdUItSjIdY5NKyLGRA__K2m54pGJIjn-TkBX63Nfin9RYrNeSVZC_q2EgrujNcUvr-u5YRMK4ajky8ay8tn0&amp;t=ffffffff9763f56e" type="text/javascript"></script>
+<script src="/STUDENTLOGIN/Frm_SemwiseStudMarks.aspx?_TSM_HiddenField_=ScriptManager1_HiddenField&amp;_TSM_CombinedScripts_=%3b%3bAjaxControlToolkit%2c+Version%3d3.0.20820.6783%2c+Culture%3dneutral%2c+PublicKeyToken%3d28f01b0e84b6d53e%3ahi-IN%3a4a33d993-d0f3-4dd1-8c4f-1a68c798a3b4%3a865923e8%3a91bd373d%3aad1f21ce%3a596d588c%3a411fea1c%3a77c58d20%3a14b56adc%3a8e72a662%3aacd642d2%3a269a19ae" type="text/javascript"></script>
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="18244ADC" style="">
+	<input type="hidden" name="__SCROLLPOSITIONX" id="__SCROLLPOSITIONX" value="0" style="">
+	<input type="hidden" name="__SCROLLPOSITIONY" id="__SCROLLPOSITIONY" value="0" style="">
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="7eiF9QP+I8BHGaAPClqnLazT2u8hmsnNMUCmhB5si12DB9ywjXyxf1UOVpEM81JNWUlYqj08wkQJ1KbQnwN/lmPd80nC+2JK8RcaJujVAQEG1cfVSuWXwkHYHH3D48Wm18qp3vvcbydR0jLE9DeQh0bgBjem2nUUJYEIRCTk/HiYcBoNiimdkbd2z81Lca1GnvPAmS4Z8um8kwV6b+YiZUv+fw0vDsXd4XfbfVZqpm2A7kXCAW32HsIdJe5liDGw5yDprgIdjLJhAUDgMM5MoEGdBXp+d43dFhZBfh8GFO0fZABWakK8+N9zaoWC1WJVgT/VRP7Pk5oBGo1yX4fzCNDRTK2pqNcUEYHFBqgQu1rMnugXB62EOMIKmBi+MxcA2FN4ugDZ+4jWG9T7fgu5HuRIZjlhRIFeLjYMoQLP4f4umeSPYr1bdaguu75I1BxBU7VF++LvpqRvqXeN/AJzqWzyL+W+BmMiWBKnvJcCOX/Uja3tfm1E0I4JZ6avp5Fe0nmgToFYaNvLanUNYuAfjwn/wT8VKC9aX8NGBtylNKQqCKDGq2RE3Lo0FCwfJXLNmvknHMYdqnvXU7BS0tPWY7CanGb+fsG5BOtuHnFks2zYn696m3IR42sb7xJCs/slP+Xyx6N291DvTNJR7ufb8l5IxSe02vlatJqV/8EhAaSej0OF2WuD+YIu9m7uin4HzbtxGo9UDR3+Z+58R5tL/J68GFxBNxs7KyRaa0YrW68v++T+3Ihub+FQyqPc1bo5ow4H9Wukerzdj+7GEo3oQIRZMvIsfpC0D0Bwe//BRroA+R/jnsttmOhADa/SRIqHapTjXD0/EYG7EtgWln6gjvap31b1NejxfxbP3wD7kBmh1UjnmsKGLpu3aaUL0zuW" style="">
+</div>
+        <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$ScriptManager1', 'form1', [], [], [], 90, 'ctl00');
+//]]>
+</script>
+
+        <table style="width: 100%; padding: 0px; margin: 0px;">
+            <tbody><tr>
+                <td>
+                    
+                    <div id="panelStudent">
+	
+                        <div>
+                        <table style="width :100%;padding:0px;margin:0px;">
+                            <tbody><tr>
+                                <td>
+                                    <table class="ucheader" style="width :100%;padding:0px;margin:0px;">
+                                        <tbody><tr>
+                                            <td>
+                                                <table>
+                                                    <tbody><tr>
+                                                        <td style="text-align:left;width:75%;vertical-align:bottom;">
+                                                            <table style="width :100%;padding:0px;margin:0px;">
+                                                                <tbody><tr>
+                                                                    <td style="text-align:left;font-family:'Times New Roman';">
+                                                                    <span id="Stud_lblInstName" class="HeaderText" style="color:White;font-size:26px;font-style:italic;">MALLA REDDY UNIVERSITY</span>
+                                                                </td>
+                                                                </tr>
+                                                            </tbody></table>                         
+                                                        </td>
+                                                    </tr>
+                                                    
+                                                </tbody></table>
+                                            </td>
+                                            <td>
+                                                <table>
+                                                    <tbody><tr>
+                                                        <td style="text-align:right;width:25%;vertical-align:bottom;">
+                                                            <table style="width :100%;padding:0px;margin:0px;">
+                                                                <tbody><tr>
+                                                                    <td style="vertical-align:bottom;">
+                                                                        <table style="width :100%;padding:0px;margin:0px;">
+                                                                            <tbody><tr>
+                                                                                <td style="text-align:left;">
+                                                                                    <span id="lblHTNo" class="a" style="color:White;font-size:18px;">2511CS020116</span>
+                                                                                </td>                                                        
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="text-align:left;">
+                                                                                    <span id="lblClass" title="Your last login" class="a" style="color:White;font-size:18px;">B.Tech - AI&amp;ML - I Year II Semester</span>
+                                                                                </td>                                                
+                                                                            </tr>
+                                                                        </tbody></table>
+                                                                    </td>
+                                                                    <td style="vertical-align:bottom;">
+                                                                        <table>
+                                                                            <tbody><tr>
+                                                                                <td>
+                                                                                    <input type="image" name="ctl00$imgStudUser" id="imgStudUser" class="ProfilePic" src="../SBCMSSTUDENT/Frm_StudentPhoto.aspx?StudentCode=26800" alt=" " style="height: 60px; width: 60px;">
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody></table>                                                            
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody></table>  
+                                                        </td>
+                                                    </tr>
+                                                </tbody></table>
+                                            </td>
+                                            <td style="vertical-align:bottom;">
+                                                <table>
+                                                    <tbody><tr>
+                                                        <td>
+                                                            <input type="submit" name="ctl00$btnstudentpassword" value="Change Password" id="btnstudentpassword" class="BtnLogin" style="">
+                                                        </td>
+                                                        <td>
+                                                            <input type="image" name="ctl00$Stud_Home" id="Stud_Home" title="Home" class="HeaderImages" src="../Images/home.jpg" style="">
+                                                        </td>
+                                                        <td>
+                                                            <input type="image" name="ctl00$Stud_Notifications" id="Stud_Notifications" title="Notifications" class="HeaderImages" src="../Images/notif.jpg" style="">
+                                                        </td>
+
+                                                         <td>
+                                                            <input type="image" name="ctl00$Stud_Logout" id="Stud_Logout" title="Home" class="HeaderImages" src="../Images/logout.jpg" style="">
+                                                        </td>
+                                                    </tr>    
+                                                </tbody></table>
+                                            </td>
+                                        </tr>                                        
+                                    </tbody></table>
+                                </td>
+                            </tr>
+                            <tr> 
+                                <td>
+                                    <table style="width :100%;padding:0px;margin:0px;">
+                                        <tbody><tr>
+                                            <td style="width:45%;">
+                                                <table style="width :100%;padding:0px;margin:0px;">
+                                                    <tbody><tr>
+                                                        <td>                    
+                                                            <a id="Stud_lnkHome" class="defaultLabel_Navigationpath" href="javascript:__doPostBack('ctl00$Stud_lnkHome','')" style="color:Black;font-weight:bold;text-decoration:none;"></a>                
+                                                            <a id="Stud_lnkModule" class="aspNetDisabled defaultLabel_Navigationpath" style="color:Black;font-weight:bold;text-decoration:none;"></a>                
+                                                            <a id="Stud_lnkForm" class="aspNetDisabled defaultLabel_Navigationpath" style="color:#EC4062;font-weight:bold;text-decoration:none;"></a>                                                                   
+                                                        </td> 
+                                                    </tr>
+                                                </tbody></table>
+                                            </td>
+                                            <td style="width:55%;">
+                                                <table style="width :100%;padding:0px;margin:0px;">
+                                                    <tbody><tr>
+                                                        
+                                                    </tr>
+                                                </tbody></table>
+                                            </td>
+                                        </tr>
+                                    </tbody></table>  
+                                </td>                 
+                            </tr>                            
+                            <tr>
+                                <td>
+                                    <marquee direction="left" behaviour="scroll" onmouseover="this.stop();" onmouseout="this.start();" scrollamount="8">
+                                        
+                                        <a id="lnkht" href="javascript:__doPostBack('ctl00$lnkht','')" style="color:DarkBlue;font-size:20px;"></a>
+                                    
+                                </marquee></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                     <div id="Stud_panelModules">
+		                                         
+                                    
+
+
+                                         
+	</div> 
+                                    </td>
+                                </tr>
+                            <tr>
+                                <td style="vertical-align:top;">
+                                    <table>    
+                                        <tbody><tr>
+                                            <td style="width:20%;vertical-align:top;"> 
+                                              
+                                                     
+                                               
+                                            </td>
+                                            <td style="width:80%;vertical-align:top;">                                  
+                                                
+
+            <script type="text/javascript">
+                function NavigateReport() {
+                    javascript:window.open('RptView_SemwiseStudMarks.aspx', '_blank');
+                }
+        </script>
+
+
+    <div id="Stud_cpBody_PanelCollegeMaster">
+		
+        <table>
+            <tbody><tr>
+                <td>
+                    <table style="width: 100%;margin-top:-4px;">
+                        <tbody><tr>
+                            <td style="width: 95%;">
+                                
+                            </td>
+                            <td style="width: 5%;">
+                                <table>
+                                    <tbody><tr>
+                                        <td>
+                                            <input type="submit" name="ctl00$Stud_cpBody$bClose" value="x Close" id="Stud_cpBody_bClose" class="ButtonAction_Coral" style="background-color: red; font-weight: bold;">
+                                        </td>
+                                    </tr>
+                                </tbody></table>
+                            </td>
+                        </tr>
+                    </tbody></table>
+
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table>
+                          <tbody><tr>
+                            <td style="vertical-align: middle;">
+                                <div id="Stud_cpBody_panelForm">
+			
+                                    <table class="defaultTable">
+                                        <tbody><tr>
+                                            <td>
+                                                <table>                                               
+                                                    <tbody><tr>
+                                                   <td style="vertical-align:top;">
+                                          
+                                              
+                                                                 <table>                                                                            
+                                                                    <tbody><tr>
+                                                                         <td style="vertical-align:top;">
+                                                                              <fieldset class="defaultfieldset">
+                                                                                        <legend class="defaultLegend">Semwise Final Marks</legend>
+                                                                                        <table>
+                                                                                            <tbody><tr>
+                                                                                                <td>
+                                                                                                    <div id="Stud_cpBody_tabResult" class="ajax__tab_xp ajax__tab_container ajax__tab_default" style="width: 1055px; visibility: visible;">
+				<div id="Stud_cpBody_tabResult_header" class="ajax__tab_header">
+					<span id="Stud_cpBody_tabResult_PanelSem1_tab" class="ajax__tab_active"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_Stud_cpBody_tabResult_PanelSem1" class="ajax__tab_tab">I Year I Semester</span></span></span></span><span id="Stud_cpBody_tabResult_PanelSem2_tab"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_Stud_cpBody_tabResult_PanelSem2" class="ajax__tab_tab">I Year II Semester</span></span></span></span><span id="Stud_cpBody_tabResult_PanelSem3_tab"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_Stud_cpBody_tabResult_PanelSem3" class="ajax__tab_tab">II Year I Semester</span></span></span></span><span id="Stud_cpBody_tabResult_PanelSem4_tab"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_Stud_cpBody_tabResult_PanelSem4" class="ajax__tab_tab">II Year II Semester</span></span></span></span><span id="Stud_cpBody_tabResult_PanelSem5_tab"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_Stud_cpBody_tabResult_PanelSem5" class="ajax__tab_tab">III Year I Semester</span></span></span></span><span id="Stud_cpBody_tabResult_PanelSem6_tab"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_Stud_cpBody_tabResult_PanelSem6" class="ajax__tab_tab">III Year II Semester</span></span></span></span><span id="Stud_cpBody_tabResult_PanelSem7_tab"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_Stud_cpBody_tabResult_PanelSem7" class="ajax__tab_tab">IV Year I Semester</span></span></span></span><span id="Stud_cpBody_tabResult_PanelSem8_tab"><span class="ajax__tab_outer"><span class="ajax__tab_inner"><span id="__tab_Stud_cpBody_tabResult_PanelSem8" class="ajax__tab_tab">IV Year II Semester</span></span></span></span>
+				</div><div id="Stud_cpBody_tabResult_body" style="height:350px;" class="ajax__tab_body ajax__scroll_vert">
+					<div id="Stud_cpBody_tabResult_PanelSem1" class="ajax__tab_panel" style="visibility: visible;">
+						
+                                                                                                                <div id="Stud_cpBody_tabResult_PanelSem1_panel1" style="border-color:#DACFD5;border-width:1px;border-style:Solid;">
+							
+                                                                                                                    <div>
+								<table cellspacing="0" rules="all" border="1" id="Stud_cpBody_tabResult_PanelSem1_gridSem1" style="border-collapse:collapse;">
+									<tbody><tr style="color:White;background-color:LightCoral;">
+										<th scope="col">Sno</th><th scope="col">SubCode</th><th align="left" scope="col">Subject Name</th><th align="center" scope="col">MonthYear</th><th align="center" scope="col">Final Grade</th><th align="center" scope="col">Credits</th><th align="center" scope="col">Status</th><th scope="col">View</th>
+									</tr><tr>
+										<td style="width:50px;">1</td><td style="width:100px;">MR25-1CS0101</td><td align="left" style="width:350px;">Programming for Problem Solving</td><td align="center" style="width:100px;">Nov2025</td><td align="center" style="width:100px;">A</td><td align="center" style="width:100px;">3.00</td><td align="center" style="width:100px;">PASS</td><td style="width:100px;">
+                                                                                                                                    <a id="Stud_cpBody_tabResult_PanelSem1_gridSem1_lnkview_0" href="javascript:__doPostBack('ctl00$Stud_cpBody$tabResult$PanelSem1$gridSem1$ctl02$lnkview','')">View Chances</a>
+                                                                                                                                </td>
+									</tr><tr style="background-color:#EFEFEF;">
+										<td>2</td><td>MR25-1CS0102</td><td align="left">UI and Web Development - I</td><td align="center">Nov2025</td><td align="center">B+</td><td align="center">3.00</td><td align="center">PASS</td><td>
+                                                                                                                                    <a id="Stud_cpBody_tabResult_PanelSem1_gridSem1_lnkview_1" href="javascript:__doPostBack('ctl00$Stud_cpBody$tabResult$PanelSem1$gridSem1$ctl03$lnkview','')">View Chances</a>
+                                                                                                                                </td>
+									</tr><tr>
+										<td>3</td><td>MR25-1BS0101</td><td align="left">Engineering Mathematics</td><td align="center">Nov2025</td><td align="center">A+</td><td align="center">4.00</td><td align="center">PASS</td><td>
+                                                                                                                                    <a id="Stud_cpBody_tabResult_PanelSem1_gridSem1_lnkview_2" href="javascript:__doPostBack('ctl00$Stud_cpBody$tabResult$PanelSem1$gridSem1$ctl04$lnkview','')">View Chances</a>
+                                                                                                                                </td>
+									</tr><tr style="background-color:#EFEFEF;">
+										<td>4</td><td>MR25-1HS0101</td><td align="left">Communication Skills and Strategies</td><td align="center">Nov2025</td><td align="center">B+</td><td align="center">2.00</td><td align="center">PASS</td><td>
+                                                                                                                                    <a id="Stud_cpBody_tabResult_PanelSem1_gridSem1_lnkview_3" href="javascript:__doPostBack('ctl00$Stud_cpBody$tabResult$PanelSem1$gridSem1$ctl05$lnkview','')">View Chances</a>
+                                                                                                                                </td>
+									</tr><tr>
+										<td>5</td><td>MR25-1BS0122</td><td align="left">Quantum Computing</td><td align="center">Nov2025</td><td align="center">B+</td><td align="center">3.00</td><td align="center">PASS</td><td>
+                                                                                                                                    <a id="Stud_cpBody_tabResult_PanelSem1_gridSem1_lnkview_4" href="javascript:__doPostBack('ctl00$Stud_cpBody$tabResult$PanelSem1$gridSem1$ctl06$lnkview','')">View Chances</a>
+                                                                                                                                </td>
+									</tr><tr style="background-color:#EFEFEF;">
+										<td>6</td><td>MR25-1HS0141</td><td align="left">Foreign language – French</td><td align="center">Nov2025</td><td align="center">A+</td><td align="center">1.00</td><td align="center">PASS</td><td>
+                                                                                                                                    <a id="Stud_cpBody_tabResult_PanelSem1_gridSem1_lnkview_5" href="javascript:__doPostBack('ctl00$Stud_cpBody$tabResult$PanelSem1$gridSem1$ctl07$lnkview','')">View Chances</a>
+                                                                                                                                </td>
+									</tr><tr>
+										<td>7</td><td>MR25-1CS0103</td><td align="left">Programming Workshop</td><td align="center">Nov2025</td><td align="center">A</td><td align="center">2.00</td><td align="center">PASS</td><td>
+                                                                                                                                    <a id="Stud_cpBody_tabResult_PanelSem1_gridSem1_lnkview_6" href="javascript:__doPostBack('ctl00$Stud_cpBody$tabResult$PanelSem1$gridSem1$ctl08$lnkview','')">View Chances</a>
+                                                                                                                                </td>
+									</tr>
+								</tbody></table>
+							</div>
+                                                                                                                    
+                                                                                                                
+						</div>
+                                                                                                            
+					</div><div id="Stud_cpBody_tabResult_PanelSem2" style="display:none;visibility:hidden;" class="ajax__tab_panel">
+						
+                                                                                                                <div id="Stud_cpBody_tabResult_PanelSem2_panel2" style="border-color:#DACFD5;border-width:1px;border-style:Solid;">
+							
+                                                                                                                    <div>
+
+							</div>
+                                                                                                                
+						</div>
+                                                                                                            
+					</div><div id="Stud_cpBody_tabResult_PanelSem3" style="display:none;visibility:hidden;" class="ajax__tab_panel">
+						
+                                                                                                                <div id="Stud_cpBody_tabResult_PanelSem3_panel3" style="border-color:#DACFD5;border-width:1px;border-style:Solid;">
+							
+                                                                                                                    <div>
+
+							</div>
+                                                                                                                
+						</div>
+                                                                                                            
+					</div><div id="Stud_cpBody_tabResult_PanelSem4" style="display:none;visibility:hidden;" class="ajax__tab_panel">
+						
+                                                                                                                <div id="Stud_cpBody_tabResult_PanelSem4_panel4" style="border-color:#DACFD5;border-width:1px;border-style:Solid;">
+							
+                                                                                                                    <div>
+
+							</div>
+                                                                                                                
+						</div>
+                                                                                                            
+					</div><div id="Stud_cpBody_tabResult_PanelSem5" style="display:none;visibility:hidden;" class="ajax__tab_panel">
+						
+                                                                                                                <div id="Stud_cpBody_tabResult_PanelSem5_panel5" style="border-color:#DACFD5;border-width:1px;border-style:Solid;">
+							
+                                                                                                                    <div>
+
+							</div>
+                                                                                                                
+						</div>
+                                                                                                            
+					</div><div id="Stud_cpBody_tabResult_PanelSem6" style="display:none;visibility:hidden;" class="ajax__tab_panel">
+						
+                                                                                                                <div id="Stud_cpBody_tabResult_PanelSem6_panel6" style="border-color:#DACFD5;border-width:1px;border-style:Solid;">
+							
+                                                                                                                    <div>
+
+							</div>
+                                                                                                                
+						</div>
+                                                                                                            
+					</div><div id="Stud_cpBody_tabResult_PanelSem7" style="display:none;visibility:hidden;" class="ajax__tab_panel">
+						
+                                                                                                                <div id="Stud_cpBody_tabResult_PanelSem7_panel7" style="border-color:#DACFD5;border-width:1px;border-style:Solid;">
+							
+                                                                                                                    <div>
+
+							</div>
+                                                                                                                
+						</div>
+                                                                                                            
+					</div><div id="Stud_cpBody_tabResult_PanelSem8" style="display:none;visibility:hidden;" class="ajax__tab_panel">
+						
+                                                                                                                <div id="Stud_cpBody_tabResult_PanelSem8_panel8" style="border-color:#DACFD5;border-width:1px;border-style:Solid;">
+							
+                                                                                                                    <div>
+
+							</div>
+                                                                                                                
+						</div>
+                                                                                                            
+					</div>
+				</div>
+			</div>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </tbody></table>
+
+                                                                                    </fieldset>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody></table>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody></table>
+                                                        </td>
+                                                    </tr>
+                                                       <tr>
+                                                     <td>                                                         
+                                                        <table>
+                                                            <tbody><tr>
+                                                                <td>
+                                                                    <span id="Stud_cpBody_Label" style="font-weight:bold;">SGPA : </span>
+                                                                </td>                                                            
+                                                            <td>
+                                                                <span id="Stud_cpBody_lblSGPA" style="color:Green;font-size:15px;font-weight:bold;">8.83</span>
+                                                            </td>
+                                                                <td style="width:10px;">
+
+                                                                </td>
+                                                                <td>
+                                                                    <span id="Stud_cpBody_Label1" style="font-weight:bold;">CGPA : </span>
+                                                                </td>                                                            
+                                                            <td>
+                                                                <span id="Stud_cpBody_lblCGPA" style="color:Green;font-size:15px;font-weight:bold;">8.83</span>
+                                                            </td>
+                                                            </tr>
+                                                        </tbody></table>
+                                                         <table style="margin-left:300px">
+                                                             <tbody><tr>
+                                                                 <td>
+                                                        <input type="submit" name="ctl00$Stud_cpBody$btnshowduesubjects" value="Show Due Subjects" id="Stud_cpBody_btnshowduesubjects" class="ButtonAction_Grey" style="font-weight: bold;">
+                                                    </td>
+                         
+                                                          <td>
+                                                              <input type="submit" name="ctl00$Stud_cpBody$btnShow" value="Show Report" id="Stud_cpBody_btnShow" class="ButtonAction_Coral" style="font-weight: bold;">
+                                                              </td> 
+                                              <td style="vertical-align:top;">
+                                
+                            </td>
+                                                                 </tr>
+                                                             
+                                                             </tbody></table>
+                                                         <table>
+                                                             <tbody><tr>
+                                                                 <td>
+                                                                    
+                                                                </td>
+                                                             </tr>
+                                                         </tbody></table>
+                                                         </td>
+                                                      </tr>
+                                                </tbody></table>
+                                        
+                                
+		</div>
+                            
+                                </td>
+                        
+                            
+                             </tr>
+
+                    
+                        </tbody></table>
+                </td>
+            </tr>  
+                    <tr>
+                <td>
+                    <input type="submit" name="ctl00$Stud_cpBody$btnShowPopup" value="" id="Stud_cpBody_btnShowPopup" style="display: none;">
+                    
+                    <div id="Stud_cpBody_pnlpopup" style="background-color: white; display: none; position: fixed; z-index: 100001;">
+			
+                        <table style="border: Solid 2px #f08080; width: 350px; height: 120px;">
+                            <tbody><tr>
+                                <td style="text-align: right; margin-top: -13px; position: absolute; margin-left: 333px;">
+                                    <input type="submit" name="ctl00$Stud_cpBody$btnClose" value="X" id="Stud_cpBody_btnClose" class="rad" style="color: white; background-color: red; border-style: none; font-size: 14px; font-weight: bold; height: 25px; width: 25px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; padding-left: 15px;">
+                                    <table>
+                                        <tbody><tr>
+                                            <td style="vertical-align: top;">
+                                                <table>
+                                                    <tbody><tr>
+                                                        <td style="padding: 0px 10px 10px 20px;">
+                                                            <input type="image" name="ctl00$Stud_cpBody$imgcaution" id="Stud_cpBody_imgcaution" src="../Images/caution.jpg" style="height: 25px; width: 25px;">
+                                                        </td>
+                                                    </tr>
+                                                </tbody></table>
+                                            </td>
+                                            <td style="vertical-align: middle;">
+                                                <table>
+                                                    <tbody><tr>
+                                                        <td style="font-family: Calibri;" colspan="2">
+                                                            <span id="Stud_cpBody_lblUser" style="font-size:16px;"></span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td style="text-align: center; padding-top: 10px;">
+                                                            
+                                                            <input type="image" name="ctl00$Stud_cpBody$btnYes" id="Stud_cpBody_btnYes" class="ButtonAction_CoralSmall" src="../Images/btnyes.jpg" style="">
+                                                            <span id="Stud_cpBody_lbl" style="display:inline-block;width:10px;"></span>
+                                                            <input type="image" name="ctl00$Stud_cpBody$btnNo" id="Stud_cpBody_btnNo" class="ButtonAction_GreySmall" src="../Images/btnNo.jpg" style="">
+                                                        </td>
+                                                    </tr>
+                                                </tbody></table>
+                                            </td>
+                                        </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    
+		</div>
+                <div id="Stud_cpBody_ModalPopupExtender1_backgroundElement" class="modalBackground" style="display: none; position: fixed; left: 0px; top: 0px; z-index: 10000;"></div></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" name="ctl00$Stud_cpBody$btnShowPopup2" value="" id="Stud_cpBody_btnShowPopup2" style="display: none;">
+                    
+                    <div id="Stud_cpBody_pnlpopup2" style="background-color: white; display: none; position: fixed; z-index: 100001;">
+			
+                        <table style="border: Solid 2px #f08080; width: 505px; height: 120px;">
+                            <tbody><tr>
+                                <td style="text-align: right; margin-top: -13px; position: absolute; margin-left:495px;">
+                                    <input type="submit" name="ctl00$Stud_cpBody$btnClose2" value="X" id="Stud_cpBody_btnClose2" class="rad" style="color: white; background-color: red; border-style: none; font-size: 14px; font-weight: bold; height: 25px; width: 25px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="Stud_cpBody_paneldet" style="border-color:#DACFD5;border-width:1px;border-style:Solid;height:300px;overflow-y:scroll;">
+				
+                                        <div>
+
+				</div>
+                                    
+			</div>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    
+		</div>
+                <div id="Stud_cpBody_ModalPopupExtender2_backgroundElement" class="modalBackground" style="display: none; position: fixed; left: 0px; top: 0px; z-index: 10000;"></div></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" name="ctl00$Stud_cpBody$btnShowPopup3" value="" id="Stud_cpBody_btnShowPopup3" style="display: none;">
+                    
+                    <div id="Stud_cpBody_pnlpopup3" style="background-color: white; display: none; position: fixed; z-index: 100001;">
+			
+                        <table style="border: Solid 2px #f08080; width: 505px; height: 120px;">
+                            <tbody><tr>
+                                <td style="text-align: right; margin-top: -13px; position: absolute; margin-left: 490px;">
+                                    <input type="submit" name="ctl00$Stud_cpBody$btnclose3" value="X" id="Stud_cpBody_btnclose3" class="rad" style="color: white; background-color: red; border-style: none; font-size: 14px; font-weight: bold; height: 25px; width: 25px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                   <table style="margin-left :200px">
+                                        <tbody><tr>
+                                            <td>
+                                                <span id="Stud_cpBody_lblSubName" style="color:Blue;"></span>
+                                            </td>
+                                        </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            <tr>
+                                <td>
+                                    <table> 
+                                        <tbody><tr>
+                                            <td>
+                                                <div id="Stud_cpBody_panelChances" style="border-color:#DACFD5;border-width:1px;border-style:Solid;height:300px;overflow-y:scroll;">
+				
+                                                    <div>
+
+				</div>
+                                                
+			</div>
+                                            </td>
+                                        </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr>                          
+                        </tbody></table>
+                    
+		</div>
+                <div id="Stud_cpBody_ModalPopupExtender3_backgroundElement" class="modalBackground" style="display: none; position: fixed; left: 0px; top: 0px; z-index: 10000;"></div></td>
+            </tr>
+        </tbody></table>
+    
+	</div>
+                                                        
+                                            </td>
+                                        </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr> 
+                        </tbody></table>
+                    </div>
+                    
+</div>
+                    
+                    
+                </td>
+            </tr>
+             <tr>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+            <tr>
+                <td>
+                    <input type="submit" name="ctl00$btnShowPopup" value="" id="btnShowPopup" style="display: none;">
+                    
+                    <div id="pnlpopup" style="background-color: white; display: none; position: fixed; z-index: 100001;">
+	
+                        <table style="border: Solid 2px #f08080; width: 350px; height: 120px;">
+                            <tbody><tr>
+                                <td style="text-align: right; margin-top: -13px; position: absolute; margin-left: 333px;">
+                                    <input type="submit" name="ctl00$btnClose" value="X" id="btnClose" class="rad" style="color: white; background-color: red; border-style: none; font-size: 14px; font-weight: bold; height: 25px; width: 25px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; padding-left: 15px;">
+                                    <table>
+                                        <tbody><tr>
+                                            <td style="vertical-align: top;">
+                                                <table>
+                                                    <tbody><tr>
+                                                        <td style="padding: 0px 10px 10px 20px;">
+                                                            <input type="image" name="ctl00$imgcaution" id="imgcaution" src="../Images/caution.jpg" style="height: 25px; width: 25px;">
+                                                        </td>
+                                                    </tr>
+                                                </tbody></table>
+                                            </td>
+                                            <td style="vertical-align: middle;">
+                                                <table>
+                                                    <tbody><tr>
+                                                        <td style="font-family: Calibri;" colspan="2">
+                                                            <span id="lblUser" style="font-size:16px;"></span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td></td>
+                                                        <td style="text-align: center; padding-top: 10px;">
+                                                            
+                                                            <input type="image" name="ctl00$btnYes" id="btnYes" class="ButtonAction_CoralSmall" src="../Images/btnyes.jpg" style="">
+                                                            <span id="Label2" style="display:inline-block;width:10px;"></span>
+                                                            <input type="image" name="ctl00$btnNo" id="btnNo" class="ButtonAction_GreySmall" src="../Images/btnNo.jpg" style="">
+                                                        </td>
+                                                    </tr>
+                                                </tbody></table>
+                                            </td>
+                                        </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    
+</div>
+                <div id="ModalPopupExtender1_backgroundElement" class="modalBackground" style="display: none; position: fixed; left: 0px; top: 0px; z-index: 10000;"></div></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" name="ctl00$hidSourceID" id="hidSourceID" style="">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" name="ctl00$btnShowPopup3" value="" id="btnShowPopup3" style="display: none;">
+                    
+                    <div id="pnlpopup3" style="background-color: white; display: none; position: fixed; z-index: 100001;">
+	
+                        <table style="border: Solid 2px #f08080; width: 420px; height: 200px;">
+                            <tbody><tr>
+                                <td style="text-align: right; margin-top: -10px; position: absolute; margin-left: 450px;">
+                                    <input type="submit" name="ctl00$btnClose3" value="X" id="btnClose3" class="rad" style="color: white; background-color: red; border-style: none; font-size: 12px; font-weight: bold; height: 20px; width: 20px;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; padding-left: 15px;">
+                                    <table>
+                                        <tbody><tr>
+                                            <td style="vertical-align: middle;">
+                                                <table style="margin-left:90px;">
+                                                    <tbody><tr>
+                                                        <td>
+                                                            <span id="Label5" class="defaultLabel_leftauto" style="display:inline-block;color:Green;font-family:Brush Script MT;font-size:22px;font-weight:bold;width:250px;">Please Change your password</span>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody></table>
+                                                <table>
+
+                                                    <tbody><tr>
+                                                        <td>
+                                                            <span id="Label11" class="defaultLabel_leftauto" style="display:inline-block;color:Red;font-size:13px;font-weight:bold;width:230px;"></span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <span id="Label7" class="defaultLabel" style="font-size:14px;">New Password</span>
+                                                        </td>
+                                                        <td>
+                                                            <input name="ctl00$txtNewPass" type="password" id="txtNewPass" class="defaultTextBox_200" style="">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        
+                                                    </tr>
+                                                    <tr>
+                                                        <td>
+                                                            <span id="Label12" class="defaultLabel" style="font-size:14px;">Confirm Password</span>
+                                                        </td>
+                                                        <td>
+                                                            <input name="ctl00$txtConPass" type="password" id="txtConPass" class="defaultTextBox_200" style="">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        
+                                                    </tr>
+                                                    </tbody></table>
+                                                <table style="margin-left:150px;">
+                                                    <tbody><tr>
+                                                        <td style="text-align: center; padding-top: 10px;">
+                                                            
+                                                            <input type="submit" name="ctl00$imgYes" value="Update" id="imgYes" class="ButtonAction_Coral" style="font-weight: bold; width: 80px;">
+                                                            
+                                                            <span id="Label13" style="display:inline-block;width:10px;"></span>
+                                                            
+                                                        </td>
+                                                    </tr>
+                                                </tbody></table>
+                                            </td>
+                                        </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    
+</div>
+                <div id="ModalPopupExtender3_backgroundElement" class="modalBackground" style="display: none; position: fixed; left: 0px; top: 0px; z-index: 10000;"></div></td>
+
+                
+            </tr>
+        </tbody></table>
+    
+
+<script type="text/javascript">
+//<![CDATA[
+
+theForm.oldSubmit = theForm.submit;
+theForm.submit = WebForm_SaveScrollPositionSubmit;
+
+theForm.oldOnSubmit = theForm.onsubmit;
+theForm.onsubmit = WebForm_SaveScrollPositionOnSubmit;
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_Stud_cpBody_tabResult_PanelSem1")}, null, {"owner":"Stud_cpBody_tabResult"}, $get("Stud_cpBody_tabResult_PanelSem1"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_Stud_cpBody_tabResult_PanelSem2")}, null, {"owner":"Stud_cpBody_tabResult"}, $get("Stud_cpBody_tabResult_PanelSem2"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_Stud_cpBody_tabResult_PanelSem3")}, null, {"owner":"Stud_cpBody_tabResult"}, $get("Stud_cpBody_tabResult_PanelSem3"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_Stud_cpBody_tabResult_PanelSem4")}, null, {"owner":"Stud_cpBody_tabResult"}, $get("Stud_cpBody_tabResult_PanelSem4"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_Stud_cpBody_tabResult_PanelSem5")}, null, {"owner":"Stud_cpBody_tabResult"}, $get("Stud_cpBody_tabResult_PanelSem5"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_Stud_cpBody_tabResult_PanelSem6")}, null, {"owner":"Stud_cpBody_tabResult"}, $get("Stud_cpBody_tabResult_PanelSem6"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_Stud_cpBody_tabResult_PanelSem7")}, null, {"owner":"Stud_cpBody_tabResult"}, $get("Stud_cpBody_tabResult_PanelSem7"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.TabPanel, {"headerTab":$get("__tab_Stud_cpBody_tabResult_PanelSem8")}, null, {"owner":"Stud_cpBody_tabResult"}, $get("Stud_cpBody_tabResult_PanelSem8"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.TabContainer, {"activeTabIndex":0,"autoPostBackId":"ctl00$Stud_cpBody$tabResult","clientStateField":$get("Stud_cpBody_tabResult_ClientState"),"scrollBars":2}, null, null, $get("Stud_cpBody_tabResult"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.ModalPopupBehavior, {"BackgroundCssClass":"modalBackground","CancelControlID":"Stud_cpBody_btnNo","PopupControlID":"Stud_cpBody_pnlpopup","dynamicServicePath":"/STUDENTLOGIN/Frm_SemwiseStudMarks.aspx","id":"Stud_cpBody_ModalPopupExtender1"}, null, null, $get("Stud_cpBody_btnShowPopup"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.ModalPopupBehavior, {"BackgroundCssClass":"modalBackground","CancelControlID":"Stud_cpBody_btnNo","PopupControlID":"Stud_cpBody_pnlpopup2","dynamicServicePath":"/STUDENTLOGIN/Frm_SemwiseStudMarks.aspx","id":"Stud_cpBody_ModalPopupExtender2"}, null, null, $get("Stud_cpBody_btnShowPopup2"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.ModalPopupBehavior, {"BackgroundCssClass":"modalBackground","CancelControlID":"Stud_cpBody_btnNo","PopupControlID":"Stud_cpBody_pnlpopup3","dynamicServicePath":"/STUDENTLOGIN/Frm_SemwiseStudMarks.aspx","id":"Stud_cpBody_ModalPopupExtender3"}, null, null, $get("Stud_cpBody_btnShowPopup3"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.ModalPopupBehavior, {"BackgroundCssClass":"modalBackground","PopupControlID":"pnlpopup","dynamicServicePath":"/STUDENTLOGIN/Frm_SemwiseStudMarks.aspx","id":"ModalPopupExtender1"}, null, null, $get("btnShowPopup"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.ModalPopupBehavior, {"BackgroundCssClass":"modalBackground","PopupControlID":"pnlpopup3","dynamicServicePath":"/STUDENTLOGIN/Frm_SemwiseStudMarks.aspx","id":"ModalPopupExtender3"}, null, null, $get("btnShowPopup3"));
+});
+//]]>
+</script>
+</form>
+
+
+</body></html>
