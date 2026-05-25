@@ -15,7 +15,8 @@ from telegram.ext import (
 import httpx
 from scraper import (
     fetch_portal_data, login_and_save_session,
-    AuthenticationRequiredError, get_user_data, save_user_data
+    AuthenticationRequiredError, get_user_data, save_user_data,
+    fetch_mru_results
 )
 
 load_dotenv()
@@ -110,6 +111,7 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             f"• `/timetable` — Today's schedule & attendance\n"
             f"• `/assignments` — Pending & submitted assignments\n"
             f"• `/subjects` — Your enrolled subjects\n"
+            f"• `/results` — Semester results from MRU Exams portal\n"
             f"• `/whoami` — Your linked account details\n"
             f"• `/logout` — Remove your session\n"
         )
@@ -119,7 +121,7 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             f"⚙️ *Get started by logging in:*\n"
             f"• `/set_cookies` — Paste session cookie *(recommended for cloud)*\n"
             f"• `/setup_credentials` — Login with email & password\n\n"
-            f"_After login you can use: `/timetable`, `/assignments`, `/subjects`_"
+            f"_After login you can use: `/timetable`, `/assignments`, `/subjects`, `/results`_"
         )
 
     await update.message.reply_text(
@@ -431,12 +433,78 @@ async def subjects_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             "❌ *Session Expired!*\n\nPlease run `/set_cookies` to log in again.",
             parse_mode=ParseMode.MARKDOWN
         )
-    except Exception as e:
-        logger.error(f"Subjects fetch failed: {e}", exc_info=True)
+# ═══════════════════════════════════════════════════════════════════════════════
+#  /results  🔒 Login required
+# ═══════════════════════════════════════════════════════════════════════════════
+async def results_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not await require_login(update):
+        return
+
+    telegram_id = str(update.effective_user.id)
+    ud = get_user_data(telegram_id)
+    email = ud.get("email", "")
+
+    status_msg = await update.message.reply_text(
+        "⏳ *Fetching your semester results from MRU Exams portal...*\n"
+        "This uses Playwright headless browser — please wait up to 30 seconds...",
+        parse_mode=ParseMode.MARKDOWN
+    )
+    try:
+        loop = asyncio.get_running_loop()
+        results = await loop.run_in_executor(None, fetch_mru_results, email)
+        await status_msg.edit_text(format_results_report(results), parse_mode=ParseMode.MARKDOWN)
+
+    except AuthenticationRequiredError:
         await status_msg.edit_text(
-            f"❌ *Failed to fetch subjects.*\n\n`{str(e)[:300]}`",
+            "❌ *Login Failed on Exam Portal!*\n\n"
+            "Your email does not seem to have a matching active account or the default roll number password has been changed on the MRU Exams portal.",
             parse_mode=ParseMode.MARKDOWN
         )
+    except Exception as e:
+        logger.error(f"Results fetch failed: {e}", exc_info=True)
+        await status_msg.edit_text(
+            f"❌ *Failed to fetch results.*\n\n`{str(e)[:300]}`",
+            parse_mode=ParseMode.MARKDOWN
+        )
+
+def format_results_report(results: dict) -> str:
+    """Format mruexams.com results into a readable markdown message."""
+    if not results:
+        return "📭 *No results found or released yet on MRU Exams portal.*"
+        
+    lines = [
+        "🎓 *MRU EXAMS SEMESTER RESULTS*",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    ]
+    
+    # Sort semesters
+    for sem_key in sorted(results.keys()):
+        sem_data = results[sem_key]
+        tab_title = sem_data.get("tab_title", sem_key)
+        subjects = sem_data.get("subjects", [])
+        sgpa = sem_data.get("sgpa", "")
+        cgpa = sem_data.get("cgpa", "")
+        
+        lines.append(f"\n📂 *{tab_title}*")
+        lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        
+        for i, sub in enumerate(subjects, 1):
+            sub_name = sub.get("Subject Name", sub.get("subjectName", "Unknown"))
+            code = sub.get("SubCode", sub.get("subjectCode", ""))
+            grade = sub.get("Final Grade", sub.get("grade", ""))
+            status = sub.get("Status", sub.get("status", ""))
+            credits = sub.get("Credits", sub.get("credits", ""))
+            
+            status_emoji = "✅" if "pass" in status.lower() else "❌"
+            lines.append(f"*{i}. {sub_name}*")
+            lines.append(f"   Code: `{code}` | Grade: *{grade}* | Status: {status_emoji} *{status}* | Credits: {credits}")
+            
+        lines.append("──────────────────────────")
+        if sgpa or cgpa:
+            lines.append(f"📊 SGPA: *{sgpa}* | CGPA: *{cgpa}*")
+            lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
+            
+    return "\n".join(lines)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 #  API fetchers  (filled in once we discover the endpoints)
@@ -638,6 +706,8 @@ async def text_message_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         await assignments_handler(update, context)
     elif "subject" in text:
         await subjects_handler(update, context)
+    elif "result" in text:
+        await results_handler(update, context)
     else:
         uid = str(update.effective_user.id)
         ud  = get_user_data(uid)
@@ -647,6 +717,7 @@ async def text_message_handler(update: Update, context: ContextTypes.DEFAULT_TYP
                 "• `/timetable` — Schedule & attendance\n"
                 "• `/assignments` — Your assignments\n"
                 "• `/subjects` — Your subjects\n"
+                "• `/results` — Semester results\n"
                 "• `/whoami` — Account info\n"
                 "• `/logout` — Remove session",
                 parse_mode=ParseMode.MARKDOWN
@@ -676,6 +747,7 @@ def main() -> None:
     app.add_handler(CommandHandler("timetable",   timetable_handler))
     app.add_handler(CommandHandler("assignments",  assignments_handler))
     app.add_handler(CommandHandler("subjects",     subjects_handler))
+    app.add_handler(CommandHandler("results",      results_handler))
     app.add_handler(CommandHandler("whoami",       whoami_handler))
     app.add_handler(CommandHandler("logout",       logout_handler))
 
