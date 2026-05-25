@@ -454,36 +454,6 @@ async def results_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         loop = asyncio.get_running_loop()
         results = await loop.run_in_executor(None, fetch_mru_results, email)
         await status_msg.edit_text(format_results_report(results), parse_mode=ParseMode.MARKDOWN)
-
-    async def merit_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-        """Handle /merit command: fetch MeritCurve dashboard and report."""
-        if not await require_login(update):
-            return
-        telegram_id = str(update.effective_user.id)
-        ud = get_user_data(telegram_id)
-        email = ud.get("email", "")
-        status_msg = await update.message.reply_text(
-            "⏳ *Fetching your MeritCurve dashboard...*\n"
-            "This uses Playwright headless browser — please wait up to 30 seconds...",
-            parse_mode=ParseMode.MARKDOWN,
-        )
-        try:
-            loop = asyncio.get_running_loop()
-            data = await loop.run_in_executor(None, fetch_merit_data, email)
-            await status_msg.edit_text(format_merit_report(data), parse_mode=ParseMode.MARKDOWN)
-        except AuthenticationRequiredError:
-            await status_msg.edit_text(
-                "❌ *Login Failed on MeritCurve!*\n\n"
-                "Your session may have expired. Please run `/set_cookies` or `/setup_credentials` again.",
-                parse_mode=ParseMode.MARKDOWN,
-            )
-        except Exception as e:
-            logger.error(f"Merit fetch failed: {e}", exc_info=True)
-            await status_msg.edit_text(
-                f"❌ *Failed to fetch MeritCurve data.*\n\n`{str(e)[:300]}`",
-                parse_mode=ParseMode.MARKDOWN,
-            )
-
     except AuthenticationRequiredError:
         await status_msg.edit_text(
             "❌ *Login Failed on Exam Portal!*\n\n"
@@ -495,6 +465,36 @@ async def results_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await status_msg.edit_text(
             f"❌ *Failed to fetch results.*\n\n`{str(e)[:300]}`",
             parse_mode=ParseMode.MARKDOWN
+        )
+
+# ── MeritCurve command handler ────────────────────────────────────────────────────────
+async def merit_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle /merit command: fetch MeritCurve dashboard and report."""
+    if not await require_login(update):
+        return
+    telegram_id = str(update.effective_user.id)
+    ud = get_user_data(telegram_id)
+    email = ud.get("email", "")
+    status_msg = await update.message.reply_text(
+        "⏳ *Fetching your MeritCurve dashboard...*\n"
+        "This uses Playwright headless browser — please wait up to 30 seconds...",
+        parse_mode=ParseMode.MARKDOWN,
+    )
+    try:
+        loop = asyncio.get_running_loop()
+        data = await loop.run_in_executor(None, fetch_merit_data, email)
+        await status_msg.edit_text(format_merit_report(data), parse_mode=ParseMode.MARKDOWN)
+    except AuthenticationRequiredError:
+        await status_msg.edit_text(
+            "❌ *Login Failed on MeritCurve!*\n\n"
+            "Your session may have expired. Please run `/set_cookies` or `/setup_credentials` again.",
+            parse_mode=ParseMode.MARKDOWN,
+        )
+    except Exception as e:
+        logger.error(f"Merit fetch failed: {e}", exc_info=True)
+        await status_msg.edit_text(
+            f"❌ *Failed to fetch MeritCurve data.*\n\n`{str(e)[:300]}`",
+            parse_mode=ParseMode.MARKDOWN,
         )
 
 def format_results_report(results: dict) -> str:
