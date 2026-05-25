@@ -365,26 +365,21 @@ def fetch_merit_data(email: str) -> Dict[str, Any]:
             saved = {c["name"]: c["value"] for c in playwright_cookies if c.get("domain") == "mru.meritcurve.com"}
             _save_merit_cookie(uid, saved)
             # Wait for dashboard elements
-            page.wait_for_selector(".dashboard", timeout=20000)
+            try:
+                page.wait_for_selector(".dashboard, .assignments-count, .tests-count, .quizzes-count", timeout=30000)
+            except Exception as e:
+                logger.warning(f"[{uid}] Dashboard elements not found or timed out: {e}")
             # Extract counts – placeholder selectors (adjust as needed)
-            try:
-                assign_el = page.query_selector(".assignments-count")
-                if assign_el:
-                    data["assignments"] = [{"title": el.inner_text().strip(), "due": el.get_attribute("data-due") or ""} for el in page.query_selector_all(".assignment-item")]
-            except Exception:
-                pass
-            try:
-                test_el = page.query_selector(".tests-count")
-                if test_el:
-                    data["tests"] = [{"title": el.inner_text().strip(), "due": el.get_attribute("data-due") or ""} for el in page.query_selector_all(".test-item")]
-            except Exception:
-                pass
-            try:
-                quiz_el = page.query_selector(".quizzes-count")
-                if quiz_el:
-                    data["quizzes"] = [{"title": el.inner_text().strip(), "due": el.get_attribute("data-due") or ""} for el in page.query_selector_all(".quiz-item")]
-            except Exception:
-                pass
+            assign_el = page.query_selector(".assignments-count")
+            if assign_el:
+                data["assignments"] = [{"title": el.inner_text().strip(), "due": el.get_attribute("data-due") or ""} for el in page.query_selector_all(".assignment-item")]
+            test_el = page.query_selector(".tests-count")
+            if test_el:
+                data["tests"] = [{"title": el.inner_text().strip(), "due": el.get_attribute("data-due") or ""} for el in page.query_selector_all(".test-item")]
+            quiz_el = page.query_selector(".quizzes-count")
+            if quiz_el:
+                data["quizzes"] = [{"title": el.inner_text().strip(), "due": el.get_attribute("data-due") or ""} for el in page.query_selector_all(".quiz-item")]
+
     finally:
         # Clean up context but keep profile for future sessions
         try:

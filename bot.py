@@ -113,6 +113,7 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
             f"• `/assignments` — Pending & submitted assignments\n"
             f"• `/subjects` — Your enrolled subjects\n"
             f"• `/results` — Semester results from MRU Exams portal\n"
+            f"• `/merit` — MeritCurve dashboard\n"
             f"• `/whoami` — Your linked account details\n"
             f"• `/logout` — Remove your session\n"
         )
@@ -748,6 +749,7 @@ async def text_message_handler(update: Update, context: ContextTypes.DEFAULT_TYP
                 "• `/assignments` — Your assignments\n"
                 "• `/subjects` — Your subjects\n"
                 "• `/results` — Semester results\n"
+                "• `/merit` — MeritCurve dashboard\n"
                 "• `/whoami` — Account info\n"
                 "• `/logout` — Remove session",
                 parse_mode=ParseMode.MARKDOWN
