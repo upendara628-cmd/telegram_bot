@@ -219,68 +219,72 @@ def fetch_portal_data(telegram_id: str) -> Dict[str, Any]:
     # Compute today's date in Indian Standard Time (IST = UTC+5:30)
     ist_time = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
     today_str = ist_time.strftime("%Y-%m-%d")
-    
+
     today_timetable = []
+    all_dates = set()
+
     for entry in timetable_data:
-        if entry.get("sessionDate") == today_str:
-            from_time = entry.get("fromTime", "")[:5] # "HH:MM"
-            to_time = entry.get("toTime", "")[:5]
-            sub_name = entry.get("subject", {}).get("name", "Unknown Subject")
-            
+        session_date = entry.get("sessionDate", "")
+        if session_date:
+            all_dates.add(session_date)
+        if session_date == today_str:
+            from_time = entry.get("fromTime", "")[:5]
+            to_time   = entry.get("toTime",   "")[:5]
+            sub_name  = entry.get("subject", {}).get("name", "Unknown Subject")
             faculties = entry.get("faculties", [])
-            fac_name = faculties[0].get("fullName", "") if faculties else ""
-            
+            fac_name  = faculties[0].get("fullName", "") if faculties else ""
             if fac_name:
                 today_timetable.append(f"🕒 {from_time} - {to_time} | {sub_name} ({fac_name})")
             else:
                 today_timetable.append(f"🕒 {from_time} - {to_time} | {sub_name}")
-                
+
+    # Find most recent past class date (for holiday/break message)
+    past_dates = sorted(d for d in all_dates if d < today_str)
+    last_class_date = ""
+    if past_dates:
+        raw = past_dates[-1]
+        try:
+            last_class_date = datetime.strptime(raw, "%Y-%m-%d").strftime("%d %b %Y")
+        except:
+            last_class_date = raw
+
     # 2. Extract Subject-Wise Attendance (for current semester)
     subject_stats = {}
     for entry in timetable_data:
-        # Check if entry is for current semester
         if entry.get("semNo") != user_sem:
             continue
-            
-        subject = entry.get("subject", {})
+        subject  = entry.get("subject", {})
         sub_name = subject.get("name")
-        sub_code = subject.get("subjectCode")
         if not sub_name:
             continue
-            
         is_completed = entry.get("completed", False)
-        student_att = entry.get("studentAttendance")
-        
-        # Check if subject structure exists
+        student_att  = entry.get("studentAttendance")
         if sub_name not in subject_stats:
             subject_stats[sub_name] = {"conducted": 0, "attended": 0}
-            
         if is_completed and student_att:
             subject_stats[sub_name]["conducted"] += 1
-            # status=True represents present, status=False is absent
             if student_att.get("status", False):
                 subject_stats[sub_name]["attended"] += 1
-                
-    # Format attendance results and compute bunk analysis
+
+    # Format attendance results
     attendance_results = []
     for sub, stats in subject_stats.items():
         cond = stats["conducted"]
-        att = stats["attended"]
-        pct = (att / cond * 100.0) if cond > 0 else 0.0
-        
+        att  = stats["attended"]
+        pct  = (att / cond * 100.0) if cond > 0 else 0.0
         bunk_info = calculate_bunks_or_attendance_required(att, cond, target_percentage=75.0)
-        
         attendance_results.append({
-            "subject": sub,
+            "subject":   sub,
             "conducted": cond,
-            "attended": att,
+            "attended":  att,
             "percentage": pct,
-            "bunk_info": bunk_info
+            "bunk_info":  bunk_info
         })
-        
+
     return {
-        "timetable": today_timetable,
-        "attendance": attendance_results
+        "timetable":       today_timetable,
+        "attendance":      attendance_results,
+        "last_class_date": last_class_date,
     }
 
 def scrape_portal(headless: bool = True) -> Dict[str, Any]:

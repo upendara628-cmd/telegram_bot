@@ -475,7 +475,7 @@ def fetch_subjects(cookies: dict, sem_no: int) -> str:
         if r.status_code != 200:
             return f"❌ Could not fetch subjects (status {r.status_code})"
 
-        subjects = r.json()  # Returns a list of subject objects
+        subjects = r.json()  # List of subject objects
         if not subjects:
             return (
                 f"📚 *Subjects — Semester {sem_no}*\n\n"
@@ -488,19 +488,37 @@ def fetch_subjects(cookies: dict, sem_no: int) -> str:
             "━━━━━━━━━━━━━━━━━━━━━━━━━━",
         ]
         for i, sub in enumerate(subjects, 1):
-            name  = sub.get("subjectName", sub.get("name", "Unknown"))
-            code  = sub.get("subjectCode", "")
-            stype = sub.get("subjectType", "Theory")
+            name    = sub.get("name", "Unknown")
+            code    = sub.get("subjectCode", "")
             credits = sub.get("credits", "")
-            icon  = "🔬" if "lab" in stype.lower() else "📖"
-            lines.append(f"{icon} *{i}. {name}*")
+
+            # subjectType is a nested object: {"type": "Theory", ...}
+            stype_obj = sub.get("subjectType") or {}
+            stype = stype_obj.get("type", "Theory") if isinstance(stype_obj, dict) else str(stype_obj)
+
+            # Faculty name (first faculty in list)
+            faculties = sub.get("faculties", [])
+            faculty   = faculties[0].get("fullName", "") if faculties else ""
+
+            # Syllabus link
+            syllabus_url = sub.get("syllabusUrl", "")
+
+            icon = "🔬" if "lab" in stype.lower() else "📖"
+            lines.append(f"\n{icon} *{i}. {name}*")
+
             detail_parts = []
-            if code:    detail_parts.append(f"Code: `{code}`")
+            if code:    detail_parts.append(f"`{code}`")
             if stype:   detail_parts.append(f"_{stype}_")
-            if credits: detail_parts.append(f"{credits} credits")
+            if credits: detail_parts.append(f"*{credits} credits*")
             if detail_parts:
                 lines.append("   " + " | ".join(detail_parts))
-        lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+            if faculty:
+                lines.append(f"   👨‍🏫 {faculty}")
+            if syllabus_url:
+                lines.append(f"   📄 [Syllabus PDF]({syllabus_url})")
+
+        lines.append("\n━━━━━━━━━━━━━━━━━━━━━━━━━━")
         return "\n".join(lines)
 
 
@@ -573,15 +591,21 @@ def format_timetable_report(results: dict) -> str:
     ]
 
     msg.append("🗓️ *TODAY'S TIMETABLE*")
-    tt = results.get("timetable", [])
+    tt       = results.get("timetable", [])
+    last_day = results.get("last_class_date", "")
     if tt:
         for entry in tt:
             msg.append(f"• {entry}")
     else:
-        msg.append("_No classes scheduled today._")
+        if last_day:
+            msg.append(f"🏖️ _No classes today — you're on a break!_")
+            msg.append(f"📅 _Last class was on: *{last_day}*_")
+        else:
+            msg.append("_No classes scheduled today._")
 
     msg.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
     msg.append("📊 *ATTENDANCE & BUNK CALCULATOR*")
+    msg.append("_(Based on completed classes this semester)_")
 
     att_data = results.get("attendance", [])
     if att_data:
@@ -596,7 +620,7 @@ def format_timetable_report(results: dict) -> str:
             msg.append(f"   Attendance: *{pct:.1f}%* ({att}/{cond} classes)")
             msg.append(f"   {bi['message']}")
     else:
-        msg.append("_No attendance data found._")
+        msg.append("_No attendance data recorded yet._")
 
     msg.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
     return "\n".join(msg)
