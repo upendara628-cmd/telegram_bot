@@ -43,12 +43,12 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     greeting = (
         f"👋 **Hello {user.first_name}!**\n\n"
         f"I am your **MRUH Portal Companion Bot**.\n"
-        f"I can fetch your timetable and attendance from CampX using a direct API integration (saving RAM and cloud resources) "
-        f"and calculate safe bunks or required classes.\n\n"
+        f"I fetch your timetable & attendance directly from CampX.\n\n"
         f"⚙️ **Available Commands:**\n"
-        f"• `/timetable` - Fetch your schedule & attendance details.\n"
-        f"• `/setup_credentials` - Configure your portal credentials via Telegram.\n"
-        f"• `/start` - Show this message again."
+        f"• `/timetable` — Fetch today's schedule & attendance\n"
+        f"• `/setup_credentials` — Auto-login with email & password\n"
+        f"• `/set_cookies` — Manual login by pasting session cookie *(recommended for cloud)*\n"
+        f"• `/start` — Show this message again"
     )
     await update.message.reply_text(greeting, parse_mode=ParseMode.MARKDOWN)
 
@@ -79,8 +79,9 @@ async def text_message_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         await update.message.reply_text(info_msg, parse_mode=ParseMode.MARKDOWN)
 
-# State definitions for credentials setup
+# State definitions
 EMAIL, PASSWORD = range(2)
+SET_COOKIE_KEY = 10
 
 async def start_credentials_setup(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Begins the credentials login setup conversation."""
@@ -154,8 +155,66 @@ async def password_received(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
 async def cancel_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Cancels the conversation and cleans up memory."""
-    await update.message.reply_text("❌ Credentials configuration cancelled.")
+    await update.message.reply_text("❌ Configuration cancelled.")
     context.user_data.pop("temp_email", None)
+    return ConversationHandler.END
+
+# ─── /set_cookies fallback (no browser needed) ───────────────────────────────
+
+async def start_set_cookies(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Guides the user to paste their campx_session_key cookie."""
+    await update.message.reply_text(
+        "🍪 **Manual Cookie Setup** *(No browser needed on server!)*\n\n"
+        "Follow these steps on your PC/phone:\n"
+        "1️⃣ Open Chrome/Edge → go to `mruh.campx.in`\n"
+        "2️⃣ Log in normally\n"
+        "3️⃣ Press `F12` → go to **Application** tab\n"
+        "4️⃣ Click **Cookies** → `mruh.campx.in`\n"
+        "5️⃣ Find `campx_session_key` → copy its **Value**\n\n"
+        "📋 **Now paste the cookie value here:**\n"
+        "*(Type `/cancel` to abort)*",
+        parse_mode=ParseMode.MARKDOWN
+    )
+    return SET_COOKIE_KEY
+
+async def cookie_key_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Saves the pasted campx_session_key cookie to the database."""
+    from scraper import get_user_data, save_user_data
+    session_key = update.message.text.strip()
+    telegram_id = str(update.effective_user.id)
+
+    # Try to delete for privacy
+    try:
+        await update.message.delete()
+    except:
+        pass
+
+    if len(session_key) < 20:
+        await update.message.reply_text(
+            "❌ That looks too short to be a valid cookie. Please try again with `/set_cookies`."
+        )
+        return ConversationHandler.END
+
+    # Load existing user data or create fresh
+    existing = get_user_data(telegram_id)
+    cookies = existing.get("cookies", {})
+    cookies["campx_session_key"] = session_key
+
+    user_info = {
+        **existing,
+        "cookies": cookies,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    save_user_data(telegram_id, user_info)
+
+    await update.message.reply_text(
+        "✅ **Cookie saved successfully!**\n\n"
+        "Your session key has been stored.\n"
+        "Use `/timetable` to fetch your data now!\n\n"
+        "⚠️ *If you get a session error in a few days, just run `/set_cookies` again — "
+        "cookies expire after ~7 days.*",
+        parse_mode=ParseMode.MARKDOWN
+    )
     return ConversationHandler.END
 
 async def timetable_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -268,7 +327,7 @@ def main() -> None:
     app.add_handler(CommandHandler("start", start_handler))
     app.add_handler(CommandHandler("timetable", timetable_handler))
     
-    # Add Conversation Handler for credential configuration
+    # Conversation: auto-login with email + password (uses Playwright)
     credentials_conv = ConversationHandler(
         entry_points=[CommandHandler("setup_credentials", start_credentials_setup)],
         states={
@@ -278,6 +337,16 @@ def main() -> None:
         fallbacks=[CommandHandler("cancel", cancel_handler)],
     )
     app.add_handler(credentials_conv)
+
+    # Conversation: manual cookie paste (no browser needed)
+    cookies_conv = ConversationHandler(
+        entry_points=[CommandHandler("set_cookies", start_set_cookies)],
+        states={
+            SET_COOKIE_KEY: [MessageHandler(filters.TEXT & ~filters.COMMAND, cookie_key_received)],
+        },
+        fallbacks=[CommandHandler("cancel", cancel_handler)],
+    )
+    app.add_handler(cookies_conv)
     
     # Add Message Handler for non-command text messages
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_message_handler))
