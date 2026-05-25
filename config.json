@@ -1,0 +1,16 @@
+{
+  "timetable_url": "https://mruh.campx.in/mruh/student-workspace/timetable",
+  "attendance_url": "https://mruh.campx.in/mruh/student-workspace/attendance",
+  "chrome_profile_dir": "chrome_profile",
+  "target_attendance_percentage": 75.0,
+  "timetable_selectors": {
+    "table": "table",
+    "row": "tr",
+    "cell": "td, th"
+  },
+  "attendance_selectors": {
+    "table": "table",
+    "row": "tr",
+    "header": "th"
+  }
+}

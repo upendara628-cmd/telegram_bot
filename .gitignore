@@ -1,0 +1,44 @@
+# Environment variables (sensitive - keep out of git!)
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database file (contains user session tokens)
+database.json
+
+# Large JSON data files
+timetable_data.json
+
+# Debug/investigation files (one-off scripts not needed in repo)
+api_responses_extracted.txt
+attendance_page.html
+attendance_page_after_modal.png
+attendance_page_dump.png
+attendance_page_text.txt
+attendance_page_text_after_modal.txt
+debug_api_calls.txt
+debug_attendance.html
+debug_dashboard.html
+debug_timetable.html
+dashboard_page.png
+dashboard_page_text.txt
+login_error.html
+login_error.png
+login_failed_final.html
+login_failed_final.png
+login_success.png
+force_login_fields_error.png
+force_login_success.png
+attendance_page_text.txt
+
+# Chrome profiles (large browser data)
+chrome_profile/
+chrome_profile_test/
+
+# Windows
+Thumbs.db
+Desktop.ini
