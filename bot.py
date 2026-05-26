@@ -779,6 +779,7 @@ def main() -> None:
     app.add_handler(CommandHandler("timetable",   timetable_handler))
     app.add_handler(CommandHandler("assignments",  assignments_handler))
     app.add_handler(CommandHandler("subjects",     subjects_handler))
+    app.add_handler(CommandHandler(["results", "result"], results_handler))
     app.add_handler(CommandHandler("merit", merit_handler))
     app.add_handler(CommandHandler("whoami",       whoami_handler))
     app.add_handler(CommandHandler("logout",       logout_handler))
