@@ -298,14 +298,16 @@ def scrape_portal(headless: bool = True) -> Dict[str, Any]:
         raise AuthenticationRequiredError("No session profile found. Please configure credentials.")
     first_user = list(users.keys())[0]
     return fetch_portal_data(first_user)
-
-def fetch_mru_results(email: str) -> Dict[str, Any]:
+def fetch_mru_results(email: str, headless: bool = True) -> Dict[str, Any]:
     """Scrape MRU exam results for the given email (roll number).
     Returns a dictionary mapping semester keys to result data.
     """
-    # Derive roll number from email (portion before @)
-    roll_no = email.split("@")[0].upper()
-    password = roll_no  # Exams portal uses roll number as default password
+    # Derive roll number from input (accept either full email or plain roll number)
+    if "@" in email:
+        roll_no = email.split("@")[0].upper()  # part before @
+    else:
+        roll_no = email.upper()  # input is already a roll number
+    password = roll_no  # Exams portal uses roll number (uppercase) as default password
 
     login_url = "https://mruexams.com/SBLogin.aspx"
     results_url = "https://mruexams.com/STUDENTLOGIN/Frm_SemwiseStudMarks.aspx"
@@ -321,11 +323,20 @@ def fetch_mru_results(email: str) -> Dict[str, Any]:
     results_data: Dict[str, Any] = {}
     try:
         with sync_playwright() as p:
+            # Use random user-agent to bypass basic bot detection
+            import random
+            user_agents = [
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15",
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+            ]
+            ua = random.choice(user_agents)
             context = p.chromium.launch_persistent_context(
                 user_data_dir=profile_dir,
-                headless=True,
+                headless=headless,
                 viewport={"width": 1280, "height": 900},
-                args=["--no-sandbox", "--disable-setuid-sandbox"]
+                args=["--no-sandbox", "--disable-setuid-sandbox", f"--user-agent={ua}"],
+                ignore_default_args=["--enable-automation"]
             )
             page = context.pages[0] if context.pages else context.new_page()
 
@@ -334,21 +345,64 @@ def fetch_mru_results(email: str) -> Dict[str, Any]:
             page.wait_for_timeout(2000)
 
             logger.info(f"[{roll_no}] Submitting credentials to MRU Exams portal")
-            page.fill("input[name*='txtUserName'], input[id*='txtUserName']", roll_no)
+            # Fill username field (both name and id selectors) with uppercase roll number
+            page.fill("input[name*='txtUserName']", roll_no)
+            page.fill("input[id*='txtUserName']", roll_no)
             page.fill("input[type='password']", password)
             login_btn = page.query_selector("input[type='submit'], button[type='submit']")
             if login_btn:
                 login_btn.click()
             else:
                 page.keyboard.press("Enter")
+            
+            # Wait for navigation/load state with timeout
+            try:
+                page.wait_for_load_state('load', timeout=10000)
+            except Exception:
+                pass
             page.wait_for_timeout(4000)
 
-            if "login" in page.url.lower():
-                raise AuthenticationRequiredError("MRU Exams portal login failed. Check credentials.")
+            # Optional debug screenshot/html
+            try:
+                page.screenshot(path=f"login_debug_{roll_no}_after_login.png", timeout=5000)
+                with open(f"login_debug_{roll_no}_after_login.html", "w", encoding="utf-8") as f:
+                    f.write(page.content())
+            except Exception as se:
+                logger.warning(f"Could not save post-login debug info: {se}")
 
-            logger.info(f"[{roll_no}] Navigating to results page")
+            # After login, check if a password change is required (only if fields are visible)
+            new_pass_input = page.query_selector("input[name='ctl00$txtNewPass']")
+            if new_pass_input and new_pass_input.is_visible():
+                logger.info(f"[{roll_no}] Detected password change prompt, updating password...")
+                # Fill new password fields (use same password for simplicity)
+                page.fill("input[name='ctl00$txtNewPass']", password)
+                page.fill("input[name='ctl00$txtConPass']", password)
+                # Click the change password button
+                change_btn = page.query_selector("#btnstudentpassword")
+                if change_btn:
+                    change_btn.click()
+                page.wait_for_timeout(3000)
+                # After password change, some portals require confirming the update via an 'Update' button
+                confirm_btn = page.query_selector("input[name='ctl00$imgYes'], #imgYes")
+                if confirm_btn:
+                    confirm_btn.click()
+                    page.wait_for_timeout(3000)
+                # Wait for any navigation after password change
+                try:
+                    page.wait_for_load_state('load', timeout=10000)
+                except Exception:
+                    pass
+
+            # After login (and optional password change), navigate to the results page
+            logger.info(f"[{roll_no}] Navigating to results page...")
             page.goto(results_url, timeout=40000, wait_until="domcontentloaded")
             page.wait_for_timeout(3000)
+
+            # Verify successful login by checking for a known element (logout button or roll number)
+            try:
+                page.wait_for_selector("#Stud_Logout, #lblHTNo", timeout=15000)
+            except Exception:
+                raise AuthenticationRequiredError("MRU Exams portal login failed. Please ensure your credentials are correct.")
 
             for sem in range(1, 9):
                 tab_id = f"__tab_Stud_cpBody_tabResult_PanelSem{sem}"
@@ -505,113 +559,5 @@ def format_merit_report(data: Dict[str, Any]) -> str:
     add_section("Quizzes", data.get("quizzes", []))
     return "\n".join(lines)
 
-def fetch_mru_results(email: str) -> Dict[str, Any]:
-    """Scrape MRU exam results."""
-    roll_no = email.split("@")[0].upper()
-    password = roll_no
-    
-    login_url = "https://mruexams.com/SBLogin.aspx"
-    results_url = "https://mruexams.com/STUDENTLOGIN/Frm_SemwiseStudMarks.aspx"
-    
-    profile_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), f"chrome_profile_results_{roll_no}"))
-    if os.path.exists(profile_dir):
-        try:
-            shutil.rmtree(profile_dir)
-        except Exception as e:
-            logger.warning(f"Could not clean profile directory {profile_dir}: {e}")
-            
-    os.makedirs(profile_dir, exist_ok=True)
-    
-    results_data = {}
-    
-    with sync_playwright() as p:
-        context = p.chromium.launch_persistent_context(
-            user_data_dir=profile_dir,
-            headless=True,
-            viewport={"width": 1280, "height": 900},
-            args=["--no-sandbox", "--disable-setuid-sandbox"]
-        )
-        page = context.pages[0] if context.pages else context.new_page()
-        
-        try:
-            logger.info(f"[{roll_no}] Loading login page...")
-            page.goto(login_url, timeout=40000, wait_until="domcontentloaded")
-            page.wait_for_timeout(2000)
-            
-            # Login
-            logger.info(f"[{roll_no}] Logging in to mruexams.com...")
-            page.fill("input[name*='txtUserName'], input[id*='txtUserName']", roll_no)
-            page.fill("input[type='password']", password)
-            
-            login_btn = page.query_selector("input[type='submit'], button[type='submit']")
-            if login_btn:
-                login_btn.click()
-            else:
-                page.keyboard.press("Enter")
-                
-            page.wait_for_timeout(4000)
-            
-            if "login" in page.url.lower():
-                raise AuthenticationRequiredError("MRU Exams portal login failed. Please ensure your credentials are correct.")
-            
-            # Navigate to results page
-            logger.info(f"[{roll_no}] Navigating to results page...")
-            page.goto(results_url, timeout=40000, wait_until="domcontentloaded")
-            page.wait_for_timeout(3000)
-            
-            # Click tabs and parse results
-            for sem in range(1, 9):
-                tab_id = f"__tab_Stud_cpBody_tabResult_PanelSem{sem}"
-                tab_selector = f"span#{tab_id}"
-                
-                tab_element = page.query_selector(tab_selector)
-                if not tab_element:
-                    continue
-                    
-                tab_title = tab_element.inner_text().strip()
-                logger.info(f"[{roll_no}] Clicking semester tab: {tab_title}")
-                tab_element.click()
-                page.wait_for_timeout(2000)
-                
-                grid_id = f"Stud_cpBody_tabResult_PanelSem{sem}_gridSem{sem}"
-                grid_tbl = page.query_selector(f"table#{grid_id}")
-                
-                if not grid_tbl:
-                    continue
-                    
-                rows = grid_tbl.query_selector_all("tr")
-                subjects = []
-                headers = []
-                
-                for r_idx, row in enumerate(rows):
-                    cells = [c.inner_text().strip() for c in row.query_selector_all("td, th")]
-                    if r_idx == 0:
-                        headers = cells
-                    else:
-                        if len(cells) >= len(headers) and any(cells):
-                            subj = dict(zip(headers, cells))
-                            subjects.append(subj)
-                            
-                if subjects:
-                    # Query SGPA / CGPA labels
-                    sgpa_elem = page.query_selector("#Stud_cpBody_lblSGPA")
-                    cgpa_elem = page.query_selector("#Stud_cpBody_lblCGPA")
-                    sgpa = sgpa_elem.inner_text().strip() if sgpa_elem else ""
-                    cgpa = cgpa_elem.inner_text().strip() if cgpa_elem else ""
-                    
-                    results_data[f"Semester {sem}"] = {
-                        "tab_title": tab_title,
-                        "subjects": subjects,
-                        "sgpa": sgpa,
-                        "cgpa": cgpa
-                    }
-                    
-        finally:
-            context.close()
-            try:
-                shutil.rmtree(profile_dir)
-            except:
-                pass
-                
-    return results_data
+
 
