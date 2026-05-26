@@ -127,7 +127,7 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         )
 
     await update.message.reply_text(
-        f"👋 *Hello {user.first_name}!*\n\n"
+        f"👋 *Hello student!*\n\n"
         f"I'm your *MRUH CampX Companion Bot*.\n"
         f"Any MRUH student can use me with their own account.\n\n"
         f"{status_line}\n\n"
