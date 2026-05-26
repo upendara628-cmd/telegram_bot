@@ -42,3 +42,10 @@ chrome_profile_test/
 # Windows
 Thumbs.db
 Desktop.ini
+
+# Debug dumps and screenshots
+login_debug_*
+*.html
+*.png
+chrome_profile_*
+
