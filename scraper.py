@@ -13,7 +13,19 @@ from attendance import calculate_bunks_or_attendance_required
 logger = logging.getLogger("CampXScraper")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-DB_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "database.json"))
+# Check if running in a production container with a mounted persistent volume /data
+DB_DIR = "/data" if os.path.exists("/data") else os.path.dirname(__file__)
+DB_FILE = os.path.abspath(os.path.join(DB_DIR, "database.json"))
+
+# Copy default database.json template to persistent volume if not present
+if DB_DIR == "/data" and not os.path.exists(DB_FILE):
+    default_db = os.path.abspath(os.path.join(os.path.dirname(__file__), "database.json"))
+    if os.path.exists(default_db):
+        try:
+            shutil.copy(default_db, DB_FILE)
+            logger.info("Copied default database.json template to persistent volume /data.")
+        except Exception as e:
+            logger.error(f"Failed to copy default database.json to /data: {e}")
 
 class AuthenticationRequiredError(Exception):
     """Raised when the session is invalid and credentials/SSO login is required."""
