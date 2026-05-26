@@ -300,9 +300,103 @@ def scrape_portal(headless: bool = True) -> Dict[str, Any]:
     return fetch_portal_data(first_user)
 
 def fetch_mru_results(email: str) -> Dict[str, Any]:
-    """Scrape MRU exam results (existing implementation)."""
-    # (implementation unchanged – omitted for brevity)
-    pass
+    """Scrape MRU exam results for the given email (roll number).
+    Returns a dictionary mapping semester keys to result data.
+    """
+    # Derive roll number from email (portion before @)
+    roll_no = email.split("@")[0].upper()
+    password = roll_no  # Exams portal uses roll number as default password
+
+    login_url = "https://mruexams.com/SBLogin.aspx"
+    results_url = "https://mruexams.com/STUDENTLOGIN/Frm_SemwiseStudMarks.aspx"
+
+    profile_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), f"chrome_profile_results_{roll_no}"))
+    if os.path.exists(profile_dir):
+        try:
+            shutil.rmtree(profile_dir)
+        except Exception as e:
+            logger.warning(f"Could not clean profile directory {profile_dir}: {e}")
+    os.makedirs(profile_dir, exist_ok=True)
+
+    results_data: Dict[str, Any] = {}
+    try:
+        with sync_playwright() as p:
+            context = p.chromium.launch_persistent_context(
+                user_data_dir=profile_dir,
+                headless=True,
+                viewport={"width": 1280, "height": 900},
+                args=["--no-sandbox", "--disable-setuid-sandbox"]
+            )
+            page = context.pages[0] if context.pages else context.new_page()
+
+            logger.info(f"[{roll_no}] Loading MRU Exams login page...")
+            page.goto(login_url, timeout=40000, wait_until="domcontentloaded")
+            page.wait_for_timeout(2000)
+
+            logger.info(f"[{roll_no}] Submitting credentials to MRU Exams portal")
+            page.fill("input[name*='txtUserName'], input[id*='txtUserName']", roll_no)
+            page.fill("input[type='password']", password)
+            login_btn = page.query_selector("input[type='submit'], button[type='submit']")
+            if login_btn:
+                login_btn.click()
+            else:
+                page.keyboard.press("Enter")
+            page.wait_for_timeout(4000)
+
+            if "login" in page.url.lower():
+                raise AuthenticationRequiredError("MRU Exams portal login failed. Check credentials.")
+
+            logger.info(f"[{roll_no}] Navigating to results page")
+            page.goto(results_url, timeout=40000, wait_until="domcontentloaded")
+            page.wait_for_timeout(3000)
+
+            for sem in range(1, 9):
+                tab_id = f"__tab_Stud_cpBody_tabResult_PanelSem{sem}"
+                tab_selector = f"span#{tab_id}"
+                tab_element = page.query_selector(tab_selector)
+                if not tab_element:
+                    continue
+                tab_title = tab_element.inner_text().strip()
+                logger.info(f"[{roll_no}] Clicking semester tab: {tab_title}")
+                tab_element.click()
+                page.wait_for_timeout(2000)
+
+                grid_id = f"Stud_cpBody_tabResult_PanelSem{sem}_gridSem{sem}"
+                grid_tbl = page.query_selector(f"table#{grid_id}")
+                if not grid_tbl:
+                    continue
+
+                rows = grid_tbl.query_selector_all("tr")
+                subjects = []
+                headers = []
+                for r_idx, row in enumerate(rows):
+                    cells = [c.inner_text().strip() for c in row.query_selector_all("td, th")]
+                    if r_idx == 0:
+                        headers = cells
+                    else:
+                        if len(cells) >= len(headers) and any(cells):
+                            subjects.append(dict(zip(headers, cells)))
+                if subjects:
+                    sgpa_elem = page.query_selector("#Stud_cpBody_lblSGPA")
+                    cgpa_elem = page.query_selector("#Stud_cpBody_lblCGPA")
+                    sgpa = sgpa_elem.inner_text().strip() if sgpa_elem else ""
+                    cgpa = cgpa_elem.inner_text().strip() if cgpa_elem else ""
+                    results_data[f"Semester {sem}"] = {
+                        "tab_title": tab_title,
+                        "subjects": subjects,
+                        "sgpa": sgpa,
+                        "cgpa": cgpa,
+                    }
+    finally:
+        try:
+            context.close()
+        except Exception:
+            pass
+        try:
+            shutil.rmtree(profile_dir)
+        except Exception:
+            pass
+    return results_data
 
 # ── MeritCurve Functions ────────────────────────────────────────────────────────
 
@@ -410,7 +504,9 @@ def format_merit_report(data: Dict[str, Any]) -> str:
     add_section("Tests", data.get("tests", []))
     add_section("Quizzes", data.get("quizzes", []))
     return "\n".join(lines)
-        
+
+def fetch_mru_results(email: str) -> Dict[str, Any]:
+    """Scrape MRU exam results."""
     roll_no = email.split("@")[0].upper()
     password = roll_no
     
