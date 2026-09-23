@@ -178,7 +178,7 @@ def login_and_save_session(telegram_id: str, email: str, password: str) -> bool:
             user_data_dir=profile_dir,
             headless=True,
             viewport={"width": 1280, "height": 800},
-            args=["--no-sandbox", "--disable-setuid-sandbox"]
+            args=["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"]
         )
         page = context.pages[0] if context.pages else context.new_page()
         try:

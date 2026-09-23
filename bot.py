@@ -186,10 +186,56 @@ async def logout_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 #  /setup_credentials  (Roll No / Email + Password → Direct MUDU API login)
 # ═══════════════════════════════════════════════════════════════════════════════
 async def start_credentials_setup(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    # Support inline arguments: /login <roll_or_email> <password>
+    if context.args and len(context.args) >= 2:
+        identifier = context.args[0].strip()
+        password = context.args[1].strip()
+        telegram_id = str(update.effective_user.id)
+        try:
+            await update.message.delete()
+        except Exception:
+            pass
+        status_msg = await update.message.reply_text(
+            "⏳ *Logging in to MUDU Portal...*\n"
+            "Verifying credentials directly with MUDU API...",
+            parse_mode=ParseMode.MARKDOWN
+        )
+        try:
+            loop = asyncio.get_running_loop()
+            success = await loop.run_in_executor(
+                None, login_and_save_session, telegram_id, identifier, password
+            )
+            if success:
+                ud = get_user_data(telegram_id)
+                name = ud.get("fullName", "")
+                roll = ud.get("rollNo", identifier)
+                sem = ud.get("semNo", ud.get("currentSemester", "Active"))
+                name_str = f"👤 *Name:* {name}\n" if name else ""
+                await status_msg.edit_text(
+                    f"✅ *Login Successful!*\n\n"
+                    f"{name_str}"
+                    f"🎓 *Roll No:* `{roll}`\n"
+                    f"📚 *Semester:* `{sem}`\n\n"
+                    f"You can now use `/timetable`, `/assignments`, `/subjects`!",
+                    parse_mode=ParseMode.MARKDOWN
+                )
+            else:
+                await status_msg.edit_text("❌ *Login Failed!*\nWrong roll number or password.")
+        except Exception as e:
+            logger.error(f"Inline login failed: {e}")
+            await status_msg.edit_text(
+                f"❌ *Login Failed!*\n\n`{str(e)[:250]}`\n\n"
+                f"💡 Try `/login` again with your correct password, or use `/set_cookies`.",
+                parse_mode=ParseMode.MARKDOWN
+            )
+        return ConversationHandler.END
+
     await update.message.reply_text(
         "📝 *Login to MUDU Portal*\n\n"
         "Send your MRU *Roll Number* or *College Email*:\n"
         "_(e.g., `2511CS020116` or `2511cs020116@mallareddyuniversity.ac.in`)_\n\n"
+        "💡 *Tip:* You can also type directly:\n"
+        "`/login <roll_number> <password>`\n\n"
         "Type `/cancel` to abort.",
         parse_mode=ParseMode.MARKDOWN
     )
@@ -728,11 +774,43 @@ def _start_health_server():
     except Exception as e:
         logger.warning(f"Could not start health check server on port {port_str}: {e}")
 
+def ensure_default_session():
+    """
+    Automatically ensures that a valid session exists in database.json.
+    Pulls credentials from environment variables MUDU_ROLL_NO and MUDU_PASSWORD,
+    defaulting to 2511CS020116.
+    """
+    roll_no = (
+        os.getenv("MUDU_ROLL_NO") or 
+        os.getenv("DEFAULT_ROLL_NO") or 
+        os.getenv("STUDENT_ROLL_NO") or 
+        "2511CS020116"
+    ).strip()
+    password = (
+        os.getenv("MUDU_PASSWORD") or 
+        os.getenv("DEFAULT_PASSWORD") or 
+        os.getenv("STUDENT_PASSWORD") or 
+        "2511CS020116"
+    ).strip()
+
+    ud = get_user_data("default")
+    if not ud or not ud.get("cookies"):
+        logger.info(f"Auto-authenticating default student session for {roll_no} on startup...")
+        try:
+            success = login_and_save_session("default", roll_no, password)
+            if success:
+                logger.info(f"✅ Auto-login succeeded on startup for {roll_no}.")
+            else:
+                logger.warning(f"Auto-login failed for {roll_no}.")
+        except Exception as e:
+            logger.error(f"Auto-login error on startup: {e}")
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  Main
 # ═══════════════════════════════════════════════════════════════════════════════
 def main() -> None:
     _start_health_server()
+    ensure_default_session()
     token = get_token()
     if not token:
         print("CRITICAL: TELEGRAM_BOT_TOKEN is missing!")
@@ -762,7 +840,7 @@ def main() -> None:
 
     # Login via email+password (uses Playwright)
     creds_conv = ConversationHandler(
-        entry_points=[CommandHandler("setup_credentials", start_credentials_setup)],
+        entry_points=[CommandHandler(["setup_credentials", "login"], start_credentials_setup)],
         states={
             EMAIL:    [MessageHandler(filters.TEXT & ~filters.COMMAND, email_received)],
             PASSWORD: [MessageHandler(filters.TEXT & ~filters.COMMAND, password_received)],
