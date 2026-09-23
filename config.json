@@ -1,16 +1,8 @@
 {
-  "timetable_url": "https://mruh.campx.in/mruh/student-workspace/timetable",
-  "attendance_url": "https://mruh.campx.in/mruh/student-workspace/attendance",
+  "portal_url": "https://mru.mudu.in",
+  "api_base_url": "https://mru.mudu.in/api",
+  "timetable_url": "https://mru.mudu.in/student/academics/timetable",
+  "attendance_url": "https://mru.mudu.in/student/academics/attendance",
   "chrome_profile_dir": "chrome_profile",
-  "target_attendance_percentage": 75.0,
-  "timetable_selectors": {
-    "table": "table",
-    "row": "tr",
-    "cell": "td, th"
-  },
-  "attendance_selectors": {
-    "table": "table",
-    "row": "tr",
-    "header": "th"
-  }
+  "target_attendance_percentage": 75.0
 }

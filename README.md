@@ -1,106 +1,130 @@
-# MRUH CampX Timetable & Attendance Bot
+# MRU MUDU Timetable & Attendance Telegram Bot
 
-A robust, production-ready Telegram Bot that scraps class timetables and attendance statistics from the MRUH (Malla Reddy University, Hyderabad) CampX student portal (`mruh.campx.in`), computes attendance calculations (safe bunks or required classes), and reports them directly to your Telegram chat.
+A production-ready Telegram Bot that fetches class timetables, attendance statistics, assignments, enrolled subjects, exam results, and MeritCurve updates from the **Malla Reddy University (MRU)** student portals:
+- **Primary Portal (MUDU):** [https://mru.mudu.in/](https://mru.mudu.in/)
+- **Exam Results Portal:** [https://mruexams.com/](https://mruexams.com/)
+- **MeritCurve Portal:** [https://mru.meritcurve.com/](https://mru.meritcurve.com/)
 
-Since the portal requires Google Sign-In, the script uses **Playwright's persistent browser context** so that you only have to log in manually once. Future checks run headlessly and automatically without needing re-authentication.
+Migrated from the decommissioned CampX portal to MUDU's high-speed REST API backend, providing responses in milliseconds without requiring heavy browser rendering for every request.
 
 ---
 
 ## Features
 
-- **Automated Login Persistence**: Re-uses session cookies via persistent user profile directories (Google SSO compatible).
-- **Attendance Math Calculator**:
-  - **Above 75%**: Computes exactly how many classes can be skipped ("bunked") safely without falling below 75%.
-  - **Below 75%**: Computes exactly how many consecutive upcoming classes must be attended to rise back to 75%.
-- **Resilient Parsing Engine**: Matches column headers dynamically and falls back to text patterns/regular expressions, making it highly robust to portal layout updates.
-- **Telegram Bot Interface**: Beautifully formatted reports with visual colored status indicators (🟢, 🟡, 🔴) and emojis, run asynchronously via background threads to keep the bot interface responsive.
+- **Direct MUDU REST API Integration**:
+  - Instant authentication (`POST /api/auth/login`) with JWT cookie management and automatic token refresh (`POST /api/auth/refresh`).
+  - Section-based weekly and daily timetable extraction (`GET /api/admin/timetable/section/{sectionId}`).
+  - Full course attendance summary with conducted, attended, and percentage calculations (`GET /api/admin/attendance/student/{linkedStudentId}/summary`).
+  - Course assignment tracking with submission and pending status (`GET /api/admin/assessment-management/student/my-assessments`).
+  - Enrolled subjects and faculty listing.
+- **Attendance & Bunk Calculator**:
+  - **Above 75%**: Computes exactly how many classes you can skip ("bunk") safely while staying at or above 75%.
+  - **Below 75%**: Computes exactly how many consecutive upcoming classes you must attend to recover your attendance to 75%.
+- **Multi-Portal Support**:
+  - `/results` command extracts semester SGPA and subject grades from `mruexams.com`.
+  - `/merit` command tracks upcoming quizzes, tests, and assignments from `mru.meritcurve.com`.
+- **Flexible User Authentication**:
+  - Direct in-chat credential setup (`/setup_credentials`).
+  - Direct session cookie pasting (`/set_cookies`) with zero credential storage required.
+  - Multi-user isolation backed by persistent JSON storage (`database.json`), cloud/Docker `/data` persistent volume support.
+- **Playwright Fallback**: Retains headless Chromium automation fallback if API structure changes.
+
+---
+
+## Bot Commands
+
+| Command | Description |
+|---|---|
+| `/start` | Welcome message, user profile status, and command list |
+| `/timetable` | Today's timetable and course-by-course attendance with bunk calculator |
+| `/assignments` | List all active, submitted, and pending MUDU assignments |
+| `/subjects` | List all enrolled subjects, course codes, credits, and faculty |
+| `/results` | Fetch university exam results and SGPA from `mruexams.com` |
+| `/merit` | Fetch dashboard status, tests, and quizzes from `mru.meritcurve.com` |
+| `/whoami` | Show current active session, student name, roll number, and section |
+| `/setup_credentials` | Interactive login with roll number / email and password |
+| `/set_cookies` | Paste MUDU cookies / JWT token directly |
+| `/logout` | Remove saved session and credentials |
 
 ---
 
 ## Project Structure
 
-- `bot.py`: The entry-point for the Telegram bot interface.
-- `scraper.py`: Core Playwright scraper engine containing DOM parsing, regex fallbacks, and authentication detectors.
-- `attendance.py`: Modules containing attendance math and self-contained unit tests.
-- `login.py`: Standalone setup utility for performing the initial login.
-- `test_scraper.py`: A local test CLI tool to check scraper parsing offline or online.
-- `config.json`: Configuration file for URLs, paths, and selectors.
+- `bot.py`: Main Telegram Bot application handling commands, conversation flows, and markdown formatting.
+- `scraper.py`: Core MUDU API client, session management, Playwright fallback, mruexams scraper, and MeritCurve scraper.
+- `attendance.py`: Pure math functions computing bunk allowance and attendance targets with built-in unit tests.
+- `login.py`: Standalone CLI utility for initial session setup (direct API or browser login).
+- `test_scraper.py`: Test suite for offline parsing heuristics (`--mock`) and live MUDU API scraping (`--live`).
+- `test_direct_scraper.py`: Quick verification script testing end-to-end timetable, attendance, and bot report formatting.
+- `config.json`: Configuration file with portal URLs and target percentage thresholds.
 - `requirements.txt`: Python package dependencies.
-- `.env.example`: Template for credentials.
+- `Dockerfile`: Production Docker image based on Microsoft Playwright.
 
 ---
 
 ## Installation & Setup
 
 ### 1. Prerequisites
-- **Python 3.8+** (Tested on Python 3.12+)
-- **Google Chrome** or **Chromium** (Managed automatically by Playwright)
+- **Python 3.10+** (Tested on Python 3.12 and 3.14)
+- Google Chrome or Playwright Chromium binaries
 
 ### 2. Install Dependencies
-Clone or copy this project folder, open your terminal, and install the requirements:
 ```bash
 pip install -r requirements.txt
-```
-
-Initialize Playwright browser binaries:
-```bash
 playwright install chromium
 ```
 
-### 3. Configuration
-
-1. Copy `.env.example` to `.env`:
-   ```bash
-   copy .env.example .env
-   ```
-2. Open `.env` and set your `TELEGRAM_BOT_TOKEN`. (You can get a token from [@BotFather](https://t.me/BotFather) on Telegram).
-3. (Optional) Open `config.json` and adjust configurations:
-   - `target_attendance_percentage`: If your target threshold is different from `75.0`%.
-   - `chrome_profile_dir`: Where the browser session profile is saved (defaults to a directory named `chrome_profile` inside the project folder).
+### 3. Environment Configuration
+Create a `.env` file in the root directory (or copy from `.env.example`):
+```bash
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+```
+> Get your bot token from [@BotFather](https://t.me/BotFather) on Telegram.
 
 ---
 
 ## How to Run
 
-### Step 1: Initial Login Setup (Mandatory)
-Because the portal uses Google SSO, you must perform the login manually *once* to save the session context.
+### Option A: Direct Local Setup
+1. **Log in once via CLI (Optional for testing):**
+   ```bash
+   python login.py
+   ```
+   Enter your roll number (e.g., `2511CS020116`) and password.
 
-Run the login script:
+2. **Verify Scraper & Math:**
+   ```bash
+   python attendance.py
+   python test_scraper.py --mock
+   python test_scraper.py --live
+   ```
+
+3. **Start the Telegram Bot:**
+   ```bash
+   python bot.py
+   ```
+
+### Option B: Docker Deployment
+Build and run the container with a persistent volume for session storage:
 ```bash
-python login.py
+docker build -t mru-telegram-bot .
+docker run -d --name mru-bot --restart unless-stopped -v mru_bot_data:/data --env-file .env mru-telegram-bot
 ```
-
-- A headful (visible) Chrome window will open.
-- Navigate to the page, complete the Google Sign-In, and wait until you are redirected to the workspace dashboard/timetable.
-- Return to your console/terminal and press **ENTER**. The browser session will close, and cookies/cache will be saved to your local `chrome_profile` folder.
-
-### Step 2: Test the Scraper (Optional)
-To verify everything works before starting the bot, run the test utility:
-```bash
-python test_scraper.py --live
-```
-This runs the scraper headlessly and prints the extracted schedule and calculated attendance metrics in the console.
-
-### Step 3: Run the Bot
-Start the Telegram Bot:
-```bash
-python bot.py
-```
-Open Telegram, search for your bot, and send `/start` or `/timetable`!
 
 ---
 
-## Customize Selectors
+## Testing & Verification
 
-If the university updates the student portal UI and parsing starts returning errors:
-1. Run `python test_scraper.py --live --headful` to watch the browser process.
-2. Inspect the table elements in Chrome Developer Tools (`F12`).
-3. Update the selectors in `config.json`:
-   - `timetable_selectors`:
-     - `table`: CSS selector for the timetable table.
-     - `row`: CSS selector for timetable rows.
-     - `cell`: CSS selector for column cells.
-   - `attendance_selectors`:
-     - `table`: CSS selector for the attendance table.
-     - `row`: CSS selector for attendance table rows.
-     - `header`: CSS selector for header cells (e.g. `th`).
+Run the test suite locally:
+- **Attendance calculations:**
+  ```bash
+  python attendance.py
+  ```
+- **Scraper mock parser:**
+  ```bash
+  python test_scraper.py --mock
+  ```
+- **End-to-End Live API test:**
+  ```bash
+  python test_direct_scraper.py
+  ```

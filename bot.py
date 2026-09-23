@@ -11,12 +11,14 @@ from telegram.ext import (
     ApplicationBuilder, CommandHandler, ContextTypes,
     MessageHandler, filters, ConversationHandler
 )
+from telegram.request import HTTPXRequest
 
 import httpx
 
 from scraper import (
     fetch_portal_data, login_and_save_session,
     AuthenticationRequiredError, get_user_data, save_user_data,
+    fetch_assignments, fetch_subjects,
     fetch_mru_results, fetch_merit_data, format_merit_report
 )
 
@@ -26,7 +28,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
-logger = logging.getLogger("CampXBot")
+logger = logging.getLogger("MUDUBot")
 
 # ── Conversation states ────────────────────────────────────────────────────────
 EMAIL, PASSWORD = range(2)
@@ -75,20 +77,18 @@ async def require_login(update: Update) -> bool:
     )
     return False
 
-# ── Auto-detect semNo from the workspaces API ─────────────────────────────────
+# ── Auto-detect semNo from MUDU API ──────────────────────────────────────────
 def detect_sem_no(cookies: dict) -> int:
     try:
-        headers = {
-            "User-Agent": "Mozilla/5.0",
-            "Referer": "https://mruh.campx.in/",
-            "Origin": "https://mruh.campx.in",
-        }
-        with httpx.Client(cookies=cookies, headers=headers, timeout=15) as client:
-            r = client.get("https://api.campx.in/auth-server/auth-v2/workspaces")
+        from scraper import MUDU_BASE_URL, MUDU_HEADERS
+        with httpx.Client(cookies=cookies, headers=MUDU_HEADERS, timeout=15) as client:
+            r = client.get(f"{MUDU_BASE_URL}/auth/me")
             if r.status_code == 200:
-                sem = r.json().get("user", {}).get("semNo")
-                if sem:
-                    return int(sem)
+                linked_id = r.json().get("data", {}).get("user", {}).get("linkedStudentId")
+                if linked_id:
+                    sr = client.get(f"{MUDU_BASE_URL}/admin/students/{linked_id}")
+                    if sr.status_code == 200:
+                        return int(sr.json().get("data", {}).get("currentSemester", 2))
     except Exception as e:
         logger.warning(f"Could not detect semNo: {e}")
     return 2
@@ -101,17 +101,20 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     ud = get_user_data(str(user.id))
 
     if ud:
+        name  = ud.get("fullName") or ud.get("rollNo") or ud.get("email", "Student")
+        roll  = ud.get("rollNo", "")
         email = ud.get("email", "unknown")
-        sem   = ud.get("semNo", "?")
+        sem   = ud.get("semNo", ud.get("currentSemester", "Active"))
         status_line = (
-            f"✅ *Logged in as:* `{email}`\n"
-            f"📚 *Semester:* `{sem}`"
+            f"✅ *Logged in as:* `{name}`\n"
+            f"🎓 *Roll No:* `{roll}`\n"
+            f"📧 *Account:* `{email}`"
         )
         feature_lines = (
             f"⚙️ *What you can do:*\n"
-            f"• `/timetable` — Today's schedule & attendance\n"
-            f"• `/assignments` — Pending & submitted assignments\n"
-            f"• `/subjects` — Your enrolled subjects\n"
+            f"• `/timetable` — Today's schedule & attendance (with bunk calculator)\n"
+            f"• `/assignments` — Active & submitted assignments\n"
+            f"• `/subjects` — Enrolled subjects & credits\n"
             f"• `/results` — Semester results from MRU Exams portal\n"
             f"• `/merit` — MeritCurve dashboard\n"
             f"• `/whoami` — Your linked account details\n"
@@ -121,15 +124,15 @@ async def start_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         status_line = "⚠️ *Not logged in yet*"
         feature_lines = (
             f"⚙️ *Get started by logging in:*\n"
-            f"• `/set_cookies` — Paste session cookie *(recommended for cloud)*\n"
-            f"• `/setup_credentials` — Login with email & password\n\n"
+            f"• `/setup_credentials` — Login with Roll No & Password *(instant)*\n"
+            f"• `/set_cookies` — Paste MUDU session cookie\n\n"
             f"_After login you can use: `/timetable`, `/assignments`, `/subjects`, `/results`_"
         )
 
     await update.message.reply_text(
         f"👋 *Hello student!*\n\n"
-        f"I'm your *MRUH CampX Companion Bot*.\n"
-        f"Any MRUH student can use me with their own account.\n\n"
+        f"I'm your *MRU Student Companion Bot* (MUDU Portal).\n"
+        f"Any MRU student can use me with their own account.\n\n"
         f"{status_line}\n\n"
         f"{feature_lines}",
         parse_mode=ParseMode.MARKDOWN
@@ -143,12 +146,16 @@ async def whoami_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
     uid = str(update.effective_user.id)
     ud  = get_user_data(uid)
+    name    = ud.get("fullName", "Student")
+    roll    = ud.get("rollNo", "unknown")
     email   = ud.get("email", "unknown")
-    sem     = ud.get("semNo", "?")
+    sem     = ud.get("semNo", ud.get("currentSemester", "?"))
     updated = ud.get("updated_at", "unknown")
     await update.message.reply_text(
-        f"👤 *Your linked account:*\n\n"
-        f"📧 Email: `{email}`\n"
+        f"👤 *Your linked MUDU account:*\n\n"
+        f"📛 Name: *{name}*\n"
+        f"🎓 Roll No: `{roll}`\n"
+        f"📧 Account: `{email}`\n"
         f"📚 Semester: `{sem}`\n"
         f"🕒 Last updated: `{updated}`\n\n"
         f"_Use `/logout` to remove this session._",
@@ -171,36 +178,36 @@ async def logout_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text(
             f"✅ *Session removed.*\n\n"
             f"Account `{email}` has been unlinked from your Telegram.\n"
-            f"Use `/set_cookies` or `/setup_credentials` to log in again.",
+            f"Use `/setup_credentials` or `/set_cookies` to log in again.",
             parse_mode=ParseMode.MARKDOWN
         )
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  /setup_credentials  (Email + Password → Playwright login)
+#  /setup_credentials  (Roll No / Email + Password → Direct MUDU API login)
 # ═══════════════════════════════════════════════════════════════════════════════
 async def start_credentials_setup(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(
-        "📝 *Login with Email & Password*\n\n"
-        "Send your MRUH portal email:\n"
-        "_(e.g., `2511cs020116@mallareddyuniversity.ac.in`)_\n\n"
+        "📝 *Login to MUDU Portal*\n\n"
+        "Send your MRU *Roll Number* or *College Email*:\n"
+        "_(e.g., `2511CS020116` or `2511cs020116@mallareddyuniversity.ac.in`)_\n\n"
         "Type `/cancel` to abort.",
         parse_mode=ParseMode.MARKDOWN
     )
     return EMAIL
 
 async def email_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    email = update.message.text.strip()
-    if "@" not in email:
+    identifier = update.message.text.strip()
+    if len(identifier) < 4:
         await update.message.reply_text(
-            "❌ That doesn't look like a valid email.\n"
-            "Please send your full email address."
+            "❌ That looks too short to be a valid roll number or email.\n"
+            "Please send your full roll number or email address."
         )
         return EMAIL
-    context.user_data["temp_email"] = email
+    context.user_data["temp_email"] = identifier
     await update.message.reply_text(
-        f"✅ Email: `{email}`\n\n"
-        "🔑 Now send your portal *password:*\n"
-        "_(it's deleted immediately after login)_",
+        f"✅ Account: `{identifier}`\n\n"
+        "🔑 Now send your MUDU portal *password:*\n"
+        "_(it's verified immediately and deleted from chat)_",
         parse_mode=ParseMode.MARKDOWN
     )
     return PASSWORD
@@ -215,8 +222,8 @@ async def password_received(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         pass
 
     status_msg = await update.message.reply_text(
-        "⏳ *Logging in to CampX...*\n"
-        "Using a headless browser — please wait up to 30 seconds...",
+        "⏳ *Logging in to MUDU Portal...*\n"
+        "Verifying credentials directly with MUDU API...",
         parse_mode=ParseMode.MARKDOWN
     )
     try:
@@ -225,20 +232,24 @@ async def password_received(update: Update, context: ContextTypes.DEFAULT_TYPE) 
             None, login_and_save_session, telegram_id, email, password
         )
         if success:
-            ud  = get_user_data(telegram_id)
-            sem = ud.get("semNo", "?")
+            ud   = get_user_data(telegram_id)
+            name = ud.get("fullName", "")
+            roll = ud.get("rollNo", email)
+            sem  = ud.get("semNo", ud.get("currentSemester", "Active"))
+            name_str = f"👤 *Name:* {name}\n" if name else ""
             await status_msg.edit_text(
                 f"✅ *Login Successful!*\n\n"
-                f"📧 Account: `{email}`\n"
-                f"📚 Semester detected: `{sem}`\n\n"
+                f"{name_str}"
+                f"🎓 *Roll No:* `{roll}`\n"
+                f"📚 *Semester:* `{sem}`\n\n"
                 f"You can now use `/timetable`, `/assignments`, `/subjects`!",
                 parse_mode=ParseMode.MARKDOWN
             )
         else:
             await status_msg.edit_text(
                 "❌ *Login Failed!*\n"
-                "Wrong email or password.\n\n"
-                "💡 Try `/set_cookies` instead — it always works!",
+                "Wrong roll number or password.\n\n"
+                "💡 Try `/set_cookies` instead.",
                 parse_mode=ParseMode.MARKDOWN
             )
     except Exception as e:
@@ -246,93 +257,134 @@ async def password_received(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         await status_msg.edit_text(
             f"❌ *Login Failed!*\n\n"
             f"`{str(e)[:250]}`\n\n"
-            f"💡 Try `/set_cookies` instead.",
+            f"💡 Try `/setup_credentials` again with your correct password, or use `/set_cookies`.",
             parse_mode=ParseMode.MARKDOWN
         )
     context.user_data.pop("temp_email", None)
     return ConversationHandler.END
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  /set_cookies  (Paste session cookie — no browser needed)
+#  /set_cookies  (Paste session cookie / access_token — no browser needed)
 # ═══════════════════════════════════════════════════════════════════════════════
 async def start_set_cookies(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(
-        "🍪 *Manual Cookie Login*\n"
+        "🍪 *Manual Cookie Login (MUDU Portal)*\n"
         "_Works on any cloud server — no browser needed!_\n\n"
         "📋 *How to get your cookie:*\n"
-        "1️⃣ Open Chrome on your PC → go to `mruh.campx.in`\n"
-        "2️⃣ Log in with your email & password\n"
-        "3️⃣ Press `F12` → go to *Application* tab\n"
-        "4️⃣ Click *Cookies* on the left → click `mruh.campx.in`\n"
-        "5️⃣ Find the row named `campx_session_key`\n"
-        "6️⃣ Copy the long value in the *Value* column\n\n"
-        "📩 *Paste the value here now:*\n"
+        "1️⃣ Open browser on your PC/phone → go to `https://mru.mudu.in`\n"
+        "2️⃣ Log in with your Roll Number & Password\n"
+        "3️⃣ Press `F12` (DevTools) → go to *Application* tab\n"
+        "4️⃣ Click *Cookies* on the left → click `https://mru.mudu.in`\n"
+        "5️⃣ Copy the value in the `access_token` row (or `refresh_token`)\n\n"
+        "📩 *Paste the token/cookie value here now:*\n"
         "_(Type `/cancel` to abort)_",
         parse_mode=ParseMode.MARKDOWN
     )
     return COOKIE_KEY
 
 async def cookie_key_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    session_key = update.message.text.strip()
+    raw_token = update.message.text.strip()
     try:
         await update.message.delete()
     except Exception:
         pass
 
-    if len(session_key) < 20:
+    if len(raw_token) < 20:
         await update.message.reply_text(
-            "❌ That value is too short to be a valid cookie.\n"
+            "❌ That value is too short to be a valid token.\n"
             "Please try `/set_cookies` again and copy the full value.",
             parse_mode=ParseMode.MARKDOWN
         )
         return ConversationHandler.END
 
-    context.user_data["temp_session_key"] = session_key
+    context.user_data["temp_session_key"] = raw_token
     await update.message.reply_text(
-        "✅ Cookie received!\n\n"
-        "📧 Now send your *college email* so I can label your account:\n"
-        "_(e.g., `2511cs020116@mallareddyuniversity.ac.in`)_\n\n"
+        "✅ Token received!\n\n"
+        "📧 Now send your *Roll Number* or *College Email*:\n"
+        "_(e.g., `2511CS020116`)_\n\n"
         "_(Type `/cancel` to abort)_",
         parse_mode=ParseMode.MARKDOWN
     )
     return COOKIE_EMAIL
 
+def _validate_mudu_cookie(token_or_cookies: str, identifier: str) -> dict:
+    from scraper import MUDU_BASE_URL, MUDU_HEADERS
+    # Parse cookie string or raw token
+    cookies = {}
+    if "=" in token_or_cookies and ";" in token_or_cookies:
+        for part in token_or_cookies.split(";"):
+            if "=" in part:
+                k, v = part.strip().split("=", 1)
+                cookies[k] = v
+    elif "=" in token_or_cookies and not token_or_cookies.startswith("eyJ"):
+        k, v = token_or_cookies.split("=", 1)
+        cookies[k.strip()] = v.strip()
+    else:
+        cookies["access_token"] = token_or_cookies
+        cookies["refresh_token"] = token_or_cookies
+
+    full_name = ""
+    roll_no = identifier
+    linked_sid = None
+    section_id = None
+    sem_no = 2
+
+    try:
+        with httpx.Client(cookies=cookies, headers=MUDU_HEADERS, timeout=15) as client:
+            rme = client.get(f"{MUDU_BASE_URL}/auth/me")
+            if rme.status_code == 200:
+                u = rme.json().get("data", {}).get("user", {})
+                linked_sid = u.get("linkedStudentId")
+                full_name = u.get("fullName", "")
+                if linked_sid:
+                    rprof = client.get(f"{MUDU_BASE_URL}/admin/students/{linked_sid}")
+                    if rprof.status_code == 200:
+                        sdata = rprof.json().get("data", {})
+                        section_id = sdata.get("sectionId") or (sdata.get("section", {}) or {}).get("id")
+                        roll_no = sdata.get("rollNo") or roll_no
+                        full_name = sdata.get("name") or full_name
+                        sem_no = sdata.get("currentSemester") or 2
+    except Exception as e:
+        logger.warning(f"Error validating cookie: {e}")
+
+    return {
+        "email": identifier,
+        "fullName": full_name,
+        "rollNo": roll_no,
+        "linkedStudentId": linked_sid,
+        "sectionId": section_id,
+        "semNo": sem_no,
+        "cookies": cookies,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+
 async def cookie_email_received(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    email       = update.message.text.strip()
+    identifier  = update.message.text.strip()
     session_key = context.user_data.pop("temp_session_key", "")
     telegram_id = str(update.effective_user.id)
 
     status_msg = await update.message.reply_text(
-        "⏳ Verifying cookie & detecting your semester...",
+        "⏳ Verifying MUDU session token...",
         parse_mode=ParseMode.MARKDOWN
     )
 
-    cookies = {
-        "campx_session_key": session_key,
-        "campx_tenant":      "mruh",
-        "campx_institution": "mruh",
-    }
-
-    loop   = asyncio.get_running_loop()
-    sem_no = await loop.run_in_executor(None, detect_sem_no, cookies)
-
-    user_info = {
-        "email":      email if "@" in email else "unknown",
-        "semNo":      sem_no,
-        "cookies":    cookies,
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-    }
+    loop = asyncio.get_running_loop()
+    user_info = await loop.run_in_executor(None, _validate_mudu_cookie, session_key, identifier)
     save_user_data(telegram_id, user_info)
+
+    name_str = f"👤 *Name:* `{user_info.get('fullName')}`\n" if user_info.get('fullName') else ""
+    roll_str = f"🎓 *Roll No:* `{user_info.get('rollNo')}`\n" if user_info.get('rollNo') else ""
 
     await status_msg.edit_text(
         f"✅ *Session saved!*\n\n"
-        f"📧 Account: `{email}`\n"
-        f"📚 Semester detected: `{sem_no}`\n\n"
+        f"{name_str}"
+        f"{roll_str}"
+        f"📧 Account: `{identifier}`\n\n"
         f"You can now use:\n"
         f"• `/timetable` — Schedule & attendance\n"
         f"• `/assignments` — Your assignments\n"
         f"• `/subjects` — Your subjects\n\n"
-        f"⚠️ _Cookies expire in ~7 days. Run `/set_cookies` again if it stops working._",
+        f"⚠️ _Tokens expire periodically. Use `/setup_credentials` for automated re-login or run `/set_cookies` if it expires._",
         parse_mode=ParseMode.MARKDOWN
     )
     return ConversationHandler.END
@@ -355,7 +407,7 @@ async def timetable_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     telegram_id = str(update.effective_user.id)
     status_msg  = await update.message.reply_text(
         "⏳ *Fetching your schedule & attendance...*\n"
-        "Making direct API request to CampX...",
+        "Connecting to MUDU portal...",
         parse_mode=ParseMode.MARKDOWN
     )
     try:
@@ -366,21 +418,21 @@ async def timetable_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     except AuthenticationRequiredError:
         await status_msg.edit_text(
             "❌ *Session Expired!*\n\n"
-            "Your cookie has expired. Please log in again:\n"
-            "• `/set_cookies` — paste a fresh cookie *(fastest)*\n"
-            "• `/setup_credentials` — email & password",
+            "Your session has expired. Please log in again:\n"
+            "• `/setup_credentials` — Roll number/email & password *(fastest)*\n"
+            "• `/set_cookies` — Paste fresh session token",
             parse_mode=ParseMode.MARKDOWN
         )
     except Exception as e:
         logger.error(f"Timetable fetch failed: {e}", exc_info=True)
         await status_msg.edit_text(
-            f"❌ *Failed to fetch data.*\n\n`{str(e)[:300]}`\n\n"
-            f"Try `/set_cookies` to refresh your session.",
+            f"❌ *Failed to fetch data from MUDU portal.*\n\n`{str(e)[:300]}`\n\n"
+            f"Try `/setup_credentials` to refresh your session.",
             parse_mode=ParseMode.MARKDOWN
         )
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  /assignments  🔒 Login required  (placeholder until API found)
+#  /assignments  🔒 Login required
 # ═══════════════════════════════════════════════════════════════════════════════
 async def assignments_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not await require_login(update):
@@ -391,7 +443,7 @@ async def assignments_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     cookies     = ud.get("cookies", {})
 
     status_msg = await update.message.reply_text(
-        "⏳ *Fetching your assignments...*",
+        "⏳ *Fetching your assignments from MUDU portal...*",
         parse_mode=ParseMode.MARKDOWN
     )
     try:
@@ -400,7 +452,7 @@ async def assignments_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
         await status_msg.edit_text(result, parse_mode=ParseMode.MARKDOWN)
     except AuthenticationRequiredError:
         await status_msg.edit_text(
-            "❌ *Session Expired!*\n\nPlease run `/set_cookies` to log in again.",
+            "❌ *Session Expired!*\n\nPlease run `/setup_credentials` or `/set_cookies` to log in again.",
             parse_mode=ParseMode.MARKDOWN
         )
     except Exception as e:
@@ -411,7 +463,7 @@ async def assignments_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
         )
 
 # ═══════════════════════════════════════════════════════════════════════════════
-#  /subjects  🔒 Login required  (placeholder until API found)
+#  /subjects  🔒 Login required
 # ═══════════════════════════════════════════════════════════════════════════════
 async def subjects_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not await require_login(update):
@@ -420,19 +472,25 @@ async def subjects_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     telegram_id = str(update.effective_user.id)
     ud          = get_user_data(telegram_id)
     cookies     = ud.get("cookies", {})
-    sem_no      = ud.get("semNo", 2)
+    linked_sid  = ud.get("linkedStudentId")
 
     status_msg = await update.message.reply_text(
-        "⏳ *Fetching your subjects...*",
+        "⏳ *Fetching your enrolled subjects from MUDU portal...*",
         parse_mode=ParseMode.MARKDOWN
     )
     try:
         loop   = asyncio.get_running_loop()
-        result = await loop.run_in_executor(None, fetch_subjects, cookies, sem_no)
+        result = await loop.run_in_executor(None, fetch_subjects, cookies, linked_sid)
         await status_msg.edit_text(result, parse_mode=ParseMode.MARKDOWN)
     except AuthenticationRequiredError:
         await status_msg.edit_text(
-            "❌ *Session Expired!*\n\nPlease run `/set_cookies` to log in again.",
+            "❌ *Session Expired!*\n\nPlease run `/setup_credentials` or `/set_cookies` to log in again.",
+            parse_mode=ParseMode.MARKDOWN
+        )
+    except Exception as e:
+        logger.error(f"Subjects fetch failed: {e}", exc_info=True)
+        await status_msg.edit_text(
+            f"❌ *Failed to fetch subjects.*\n\n`{str(e)[:300]}`",
             parse_mode=ParseMode.MARKDOWN
         )
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -540,180 +598,49 @@ def format_results_report(results: dict) -> str:
 # ═══════════════════════════════════════════════════════════════════════════════
 #  API fetchers  (filled in once we discover the endpoints)
 # ═══════════════════════════════════════════════════════════════════════════════
-CAMPX_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    "Referer":    "https://mruh.campx.in/",
-    "Origin":     "https://mruh.campx.in",
-    "accept":     "application/json, text/plain, */*",
-    "x-institution-code": "mruh",
-    "x-platform-id":      "campx",
-    "x-tenant-id":        "mruh",
-    "x-campx-client":     "student-web",
-}
-
-def fetch_assignments(cookies: dict) -> str:
-    """Fetch assignments from CampX API — endpoint discovered via network scan."""
-    url = "https://api.campx.in/student-api/student-assignments/active-assignments?assignmentType=Integrated"
-    with httpx.Client(cookies=cookies, headers=CAMPX_HEADERS, timeout=20.0) as client:
-        r = client.get(url)
-        if r.status_code == 401:
-            raise AuthenticationRequiredError("Session expired")
-        if r.status_code != 200:
-            return f"❌ Could not fetch assignments (status {r.status_code})"
-        data = r.json()
-        assignments = data.get("assignments", [])
-        return format_assignments(assignments)
-
-def fetch_subjects(cookies: dict, sem_no: int) -> str:
-    """Fetch subjects from CampX LMS API — endpoint discovered via network scan."""
-    url = f"https://api.campx.in/student-api/subjects?semNo={sem_no}"
-    with httpx.Client(cookies=cookies, headers=CAMPX_HEADERS, timeout=20.0) as client:
-        r = client.get(url)
-        if r.status_code == 401:
-            raise AuthenticationRequiredError("Session expired")
-        if r.status_code != 200:
-            return f"❌ Could not fetch subjects (status {r.status_code})"
-
-        subjects = r.json()  # List of subject objects
-        if not subjects:
-            return (
-                f"📚 *Subjects — Semester {sem_no}*\n\n"
-                "_No subjects found for this semester._"
-            )
-
-        lines = [
-            f"📚 *Your Subjects — Semester {sem_no}*",
-            f"_Total: {len(subjects)} subject(s)_",
-            "━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        ]
-        for i, sub in enumerate(subjects, 1):
-            name    = sub.get("name", "Unknown")
-            code    = sub.get("subjectCode", "")
-            credits = sub.get("credits", "")
-
-            # subjectType is a nested object: {"type": "Theory", ...}
-            stype_obj = sub.get("subjectType") or {}
-            stype = stype_obj.get("type", "Theory") if isinstance(stype_obj, dict) else str(stype_obj)
-
-            # Faculty name (first faculty in list)
-            faculties = sub.get("faculties", [])
-            faculty   = faculties[0].get("fullName", "") if faculties else ""
-
-            # Syllabus link
-            syllabus_url = sub.get("syllabusUrl", "")
-
-            icon = "🔬" if "lab" in stype.lower() else "📖"
-            lines.append(f"\n{icon} *{i}. {name}*")
-
-            detail_parts = []
-            if code:    detail_parts.append(f"`{code}`")
-            if stype:   detail_parts.append(f"_{stype}_")
-            if credits: detail_parts.append(f"*{credits} credits*")
-            if detail_parts:
-                lines.append("   " + " | ".join(detail_parts))
-
-            if faculty:
-                lines.append(f"   👨‍🏫 {faculty}")
-            if syllabus_url:
-                lines.append(f"   📄 [Syllabus PDF]({syllabus_url})")
-
-        lines.append("\n━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        return "\n".join(lines)
-
-
-def format_assignments(data) -> str:
-    """Format assignments API response into a readable message."""
-    ist_now = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
-    now_str = ist_now.strftime("%d %b %Y, %I:%M %p IST")
-
-    lines = [
-        "📋 *ASSIGNMENTS DASHBOARD*",
-        f"🕒 _{now_str}_",
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━",
-    ]
-
-    # Handle both list and dict responses
-    items = data if isinstance(data, list) else data.get("result", data.get("data", []))
-
-    if not items:
-        lines.append("_No assignments found._")
-        lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        return "\n".join(lines)
-
-    pending   = [a for a in items if not a.get("submitted", False) and not a.get("isSubmitted", False)]
-    submitted = [a for a in items if a.get("submitted", False) or a.get("isSubmitted", False)]
-
-    lines.append(f"📊 Total: *{len(items)}* | ✅ Submitted: *{len(submitted)}* | ⏳ Pending: *{len(pending)}*")
-    lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
-
-    if pending:
-        lines.append("⏳ *PENDING ASSIGNMENTS*")
-        for a in pending[:10]:
-            title   = a.get("title", a.get("assignmentTitle", "Untitled"))
-            subject = a.get("subjectName", a.get("subject", {}).get("name", ""))
-            due     = a.get("dueDate", a.get("lastDate", ""))
-            if due:
-                try:
-                    due_dt  = datetime.fromisoformat(due.replace("Z", "+00:00"))
-                    due_ist = due_dt + timedelta(hours=5, minutes=30)
-                    due     = due_ist.strftime("%d %b %Y")
-                except:
-                    pass
-            lines.append(f"\n🔴 *{title}*")
-            if subject:
-                lines.append(f"   📖 Subject: _{subject}_")
-            if due:
-                lines.append(f"   📅 Due: `{due}`")
-
-    if submitted:
-        lines.append(f"\n✅ *SUBMITTED ({len(submitted)})*")
-        for a in submitted[:5]:
-            title = a.get("title", a.get("assignmentTitle", "Untitled"))
-            lines.append(f"   • _{title}_")
-        if len(submitted) > 5:
-            lines.append(f"   _...and {len(submitted)-5} more_")
-
-    lines.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    return "\n".join(lines)
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  Timetable report formatter
-# ═══════════════════════════════════════════════════════════════════════════════
 def format_timetable_report(results: dict) -> str:
     ist_now = datetime.now(timezone.utc) + timedelta(hours=5, minutes=30)
     now_str = ist_now.strftime("%d %b %Y, %I:%M %p IST")
+    day_name = results.get("day_name", ist_now.strftime("%A").upper())
+    student_name = results.get("student_name", "")
+    roll_no = results.get("roll_no", "")
+    overall_pct = results.get("overall_percentage")
 
     msg = [
-        "🎓 *MRUH STUDENT DASHBOARD*",
+        "🎓 *MRU STUDENT DASHBOARD (MUDU)*",
         f"🕒 _{now_str}_",
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━",
     ]
+    if student_name or roll_no:
+        ident = f"👤 *{student_name}*" if student_name else ""
+        if roll_no:
+            ident += f" (`{roll_no}`)" if ident else f"🎓 Roll: `{roll_no}`"
+        msg.append(ident)
 
-    msg.append("🗓️ *TODAY'S TIMETABLE*")
-    tt       = results.get("timetable", [])
-    last_day = results.get("last_class_date", "")
+    if overall_pct is not None:
+        ov_emoji = "🟢" if overall_pct >= 75 else ("🟡" if overall_pct >= 65 else "🔴")
+        msg.append(f"{ov_emoji} Overall Attendance: *{overall_pct:.2f}%*")
+
+    msg.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    msg.append(f"🗓️ *TODAY'S TIMETABLE ({day_name})*")
+    tt = results.get("timetable", [])
     if tt:
         for entry in tt:
             msg.append(f"• {entry}")
     else:
-        if last_day:
-            msg.append(f"🏖️ _No classes today — you're on a break!_")
-            msg.append(f"📅 _Last class was on: *{last_day}*_")
-        else:
-            msg.append("_No classes scheduled today._")
+        msg.append(f"🏖️ _No classes scheduled for {day_name.title()}._")
 
     msg.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
     msg.append("📊 *ATTENDANCE & BUNK CALCULATOR*")
-    msg.append("_(Based on completed classes this semester)_")
+    msg.append("_(Target threshold: 75.0%)_")
 
     att_data = results.get("attendance", [])
     if att_data:
         for item in sorted(att_data, key=lambda x: x["percentage"]):
-            sub  = item["subject"]
-            cond = item["conducted"]
-            att  = item["attended"]
-            pct  = item["percentage"]
-            bi   = item["bunk_info"]
+            sub   = item["subject"]
+            cond  = item["conducted"]
+            att   = item["attended"]
+            pct   = item["percentage"]
+            bi    = item["bunk_info"]
             emoji = "🟢" if pct >= 75 else ("🟡" if pct >= 65 else "🔴")
             msg.append(f"\n{emoji} *{sub}*")
             msg.append(f"   Attendance: *{pct:.1f}%* ({att}/{cond} classes)")
@@ -724,31 +651,43 @@ def format_timetable_report(results: dict) -> str:
     msg.append("━━━━━━━━━━━━━━━━━━━━━━━━━━")
     return "\n".join(msg)
 
+format_report = format_timetable_report
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  Generic text handler
 # ═══════════════════════════════════════════════════════════════════════════════
 async def text_message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not update.message or not update.message.text:
+        return
     text = update.message.text.lower().strip()
-    if any(g in text for g in ["hi", "hello", "hey", "yo"]):
+    user = update.effective_user
+    logger.info(f"Incoming message from {user.id} (@{user.username}): '{text}'")
+
+    if any(g in text for g in ["hi", "hello", "hey", "yo", "start"]):
         await start_handler(update, context)
-    elif "timetable" in text:
+    elif any(k in text for k in ["timetable", "schedule", "attendance"]):
         await timetable_handler(update, context)
     elif "assignment" in text:
         await assignments_handler(update, context)
-    elif "subject" in text:
+    elif any(k in text for k in ["subject", "course"]):
         await subjects_handler(update, context)
-    elif "result" in text:
+    elif any(k in text for k in ["result", "marks", "sgpa"]):
         await results_handler(update, context)
+    elif any(k in text for k in ["merit", "quiz"]):
+        await merit_handler(update, context)
+    elif any(k in text for k in ["whoami", "profile", "account"]):
+        await whoami_handler(update, context)
     else:
         uid = str(update.effective_user.id)
         ud  = get_user_data(uid)
         if ud:
+            name = ud.get("fullName") or ud.get("rollNo") or "Student"
             await update.message.reply_text(
-                "🤖 Use one of these commands:\n"
-                "• `/timetable` — Schedule & attendance\n"
-                "• `/assignments` — Your assignments\n"
-                "• `/subjects` — Your subjects\n"
-                "• `/results` — Semester results\n"
+                f"👋 Hello *{name}*! Choose an option:\n\n"
+                "• `/timetable` — Schedule & attendance (with bunk calculator)\n"
+                "• `/assignments` — Assignments & submissions\n"
+                "• `/subjects` — Enrolled subjects & faculty\n"
+                "• `/results` — Semester exam results\n"
                 "• `/merit` — MeritCurve dashboard\n"
                 "• `/whoami` — Account info\n"
                 "• `/logout` — Remove session",
@@ -757,10 +696,13 @@ async def text_message_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         else:
             await update.message.reply_text(
                 "🔒 *Please log in first!*\n\n"
-                "• `/set_cookies` — Login via cookie *(recommended)*\n"
-                "• `/setup_credentials` — Login via email & password",
+                "• `/setup_credentials` — Login with roll number & password *(fastest)*\n"
+                "• `/set_cookies` — Login via session cookie",
                 parse_mode=ParseMode.MARKDOWN
             )
+
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.warning(f"Handled Telegram exception: {context.error}")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 #  Main
@@ -771,8 +713,17 @@ def main() -> None:
         print("CRITICAL: TELEGRAM_BOT_TOKEN is missing!")
         sys.exit(1)
 
-    logger.info("Starting CampX Telegram Bot...")
-    app = ApplicationBuilder().token(token).build()
+    logger.info("Starting MUDU Telegram Bot...")
+    req = HTTPXRequest(
+        connect_timeout=30.0,
+        read_timeout=30.0,
+        write_timeout=30.0,
+        pool_timeout=30.0,
+    )
+    app = ApplicationBuilder().token(token).request(req).build()
+
+    # Error handler
+    app.add_error_handler(error_handler)
 
     # Basic commands
     app.add_handler(CommandHandler("start",       start_handler))
@@ -810,7 +761,7 @@ def main() -> None:
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, text_message_handler))
 
     print("Bot is running!")
-    app.run_polling()
+    app.run_polling(bootstrap_retries=-1, timeout=20)
 
 if __name__ == "__main__":
     main()
