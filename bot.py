@@ -704,10 +704,35 @@ async def text_message_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     logger.warning(f"Handled Telegram exception: {context.error}")
 
+def _start_health_server():
+    port_str = os.getenv("PORT")
+    if not port_str:
+        return
+    import threading
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+    class HealthHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"MUDU Telegram Bot is online and healthy!")
+        def log_message(self, format, *args):
+            pass
+
+    try:
+        port = int(port_str)
+        server = HTTPServer(("0.0.0.0", port), HealthHandler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        logger.info(f"Started health check HTTP server on port {port} for Render.")
+    except Exception as e:
+        logger.warning(f"Could not start health check server on port {port_str}: {e}")
+
 # ═══════════════════════════════════════════════════════════════════════════════
 #  Main
 # ═══════════════════════════════════════════════════════════════════════════════
 def main() -> None:
+    _start_health_server()
     token = get_token()
     if not token:
         print("CRITICAL: TELEGRAM_BOT_TOKEN is missing!")
